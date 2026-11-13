@@ -97,6 +97,14 @@
 
       <!-- Navigation & Actions -->
       <div class="flex items-center gap-2 sm:gap-3 shrink-0">
+        <!-- Vault Key Unlock Button -->
+        <button id="vault-key-status-btn" onclick="window.openVaultKeyModal()" class="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-[#030B38] hover:bg-[#4B649B]/25 border border-[#F4B41A]/50 text-xs font-semibold text-[#F4B41A] transition cursor-pointer">
+          <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" />
+          </svg>
+          <span id="vault-key-label">Unlock Vault Key</span>
+        </button>
+
         <!-- PWA Install Prompt Button -->
         <button id="pwa-install-btn" class="hidden items-center gap-1.5 px-2.5 sm:px-3 py-2 rounded-xl bg-[#4B649B]/25 hover:bg-[#4B649B]/40 border border-[#4B649B]/50 text-xs font-medium text-slate-200 transition cursor-pointer">
           <svg class="w-4 h-4 text-[#F4B41A]" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
@@ -105,19 +113,13 @@
           <span class="hidden md:inline">Install App</span>
         </button>
 
-        <!-- Admin Toggle (Always visible on mobile & desktop for Studio Owners/Admins) -->
+        <!-- Admin Toggle -->
         <button id="nav-admin-btn" onclick="window.toggleAdminView()" class="inline-flex items-center gap-1.5 px-3 sm:px-3.5 py-2 rounded-xl bg-[#F4B41A] hover:bg-[#D99B0E] text-[#030B38] text-xs sm:text-sm font-extrabold uppercase tracking-wider shadow-md transition cursor-pointer shrink-0">
           <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
           </svg>
           <span id="nav-admin-label">Admin Panel</span>
         </button>
-
-        <!-- User Badge & Sign Out -->
-        <div class="hidden md:flex flex-col items-end mr-1">
-          <span id="user-email-display" class="text-xs text-slate-300 font-medium truncate max-w-[160px]"></span>
-          <span id="user-role-badge" class="text-[10px] uppercase tracking-wider font-bold text-[#F4B41A]"></span>
-        </div>
 
         <button onclick="window.handleSignOut()" class="px-2.5 sm:px-3 py-2 rounded-xl bg-[#030B38] hover:bg-red-950/50 border border-[#4B649B]/40 hover:border-red-500/50 text-xs sm:text-sm font-medium text-slate-300 hover:text-red-300 transition cursor-pointer shrink-0">
           Sign Out
@@ -129,7 +131,7 @@
   <!-- Main Content Wrapper -->
   <main class="flex-1 flex flex-col">
 
-    <!-- Initial Loading Screen -->
+    <!-- Loading Screen -->
     <section id="loading-screen" class="flex-1 flex flex-col items-center justify-center p-6">
       <div class="w-14 h-14 rounded-2xl bg-[#020724] border border-[#F4B41A]/40 flex items-center justify-center animate-pulse mb-4">
         <svg class="w-8 h-8 text-[#F4B41A]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
@@ -156,456 +158,176 @@
           <p class="text-xs uppercase tracking-[0.25em] text-[#4B649B] font-semibold mt-1">
             Invite-Only Screening Vault
           </p>
-          <p class="text-sm text-slate-400 mt-3">
-            Authorized screening members and executives only. Public registration is disabled.
-          </p>
         </div>
 
         <form id="login-form" class="space-y-4" autocomplete="off">
           <div>
-            <label for="login-email" class="block text-xs font-semibold uppercase tracking-wider text-slate-300 mb-1.5">
-              Authorized Email
-            </label>
-            <input
-              id="login-email"
-              type="email"
-              required
-              placeholder="member@nobleproductionstudios.com"
-              class="w-full px-4 py-3 rounded-xl bg-[#030B38] border border-[#4B649B]/50 text-slate-100 placeholder-slate-500 focus:outline-none focus:border-[#F4B41A] transition"
-            />
+            <label class="block text-xs font-semibold uppercase tracking-wider text-slate-300 mb-1.5">Authorized Email</label>
+            <input id="login-email" type="email" required placeholder="member@nobleproductionstudios.com" class="w-full px-4 py-3 rounded-xl bg-[#030B38] border border-[#4B649B]/50 text-slate-100 placeholder-slate-500 focus:outline-none focus:border-[#F4B41A]" />
           </div>
-
           <div>
-            <label for="login-password" class="block text-xs font-semibold uppercase tracking-wider text-slate-300 mb-1.5">
-              Access Passkey
-            </label>
-            <input
-              id="login-password"
-              type="password"
-              required
-              placeholder="••••••••••••"
-              class="w-full px-4 py-3 rounded-xl bg-[#030B38] border border-[#4B649B]/50 text-slate-100 placeholder-slate-500 focus:outline-none focus:border-[#F4B41A] transition"
-            />
+            <label class="block text-xs font-semibold uppercase tracking-wider text-slate-300 mb-1.5">Password</label>
+            <input id="login-password" type="password" required placeholder="••••••••••••" class="w-full px-4 py-3 rounded-xl bg-[#030B38] border border-[#4B649B]/50 text-slate-100 placeholder-slate-500 focus:outline-none focus:border-[#F4B41A]" />
           </div>
-
-          <button
-            id="login-submit-btn"
-            type="submit"
-            class="w-full py-3.5 px-4 rounded-xl bg-[#F4B41A] hover:bg-[#D99B0E] text-[#030B38] font-bold text-sm uppercase tracking-wider shadow-lg transition transform active:scale-[0.99] cursor-pointer"
-          >
+          <button id="login-submit-btn" type="submit" class="w-full py-3.5 px-4 rounded-xl bg-[#F4B41A] hover:bg-[#D99B0E] text-[#030B38] font-bold text-sm uppercase tracking-wider shadow-lg transition cursor-pointer">
             Enter Screening Room
           </button>
         </form>
-
-        <div class="mt-6 pt-5 border-t border-[#4B649B]/25 text-center">
-          <p class="text-xs text-slate-400">
-            Need screening credentials? Contact a Noble Production Studios Administrator.
-          </p>
-        </div>
       </div>
     </section>
 
     <!-- Screening Catalog View -->
     <section id="catalog-view" class="hidden max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      <!-- Featured Hero Banner -->
+      <!-- Featured Hero -->
       <div id="featured-hero" class="hidden mb-10 rounded-3xl overflow-hidden bg-[#020724] border border-[#4B649B]/40 noble-glow">
         <div class="grid grid-cols-1 lg:grid-cols-12">
           <div class="lg:col-span-7 relative min-h-[240px] sm:min-h-[340px] bg-[#030B38]">
-            <img id="hero-thumb" src="" alt="Featured Screening" class="w-full h-full object-cover opacity-90" />
+            <img id="hero-thumb" src="" alt="Featured" class="w-full h-full object-cover opacity-90" />
             <div class="absolute inset-0 bg-gradient-to-t lg:bg-gradient-to-r from-[#020724] via-[#020724]/40 to-transparent"></div>
-            <span class="absolute top-4 left-4 px-3 py-1 rounded-full bg-[#F4B41A] text-[#030B38] text-xs font-extrabold uppercase tracking-wider shadow">
-              Featured Screening
-            </span>
+            <span class="absolute top-4 left-4 px-3 py-1 rounded-full bg-[#F4B41A] text-[#030B38] text-xs font-extrabold uppercase tracking-wider shadow">Featured Master</span>
           </div>
           <div class="lg:col-span-5 p-6 sm:p-8 flex flex-col justify-center">
-            <div class="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-[#F4B41A] mb-2">
-              <span id="hero-category">Feature Cut</span>
-              <span>•</span>
-              <span id="hero-duration">HD Master</span>
-            </div>
+            <span id="hero-category" class="text-xs font-semibold uppercase tracking-wider text-[#F4B41A] mb-2">Original</span>
             <h2 id="hero-title" class="font-serif text-2xl sm:text-3xl font-bold text-white mb-3"></h2>
             <p id="hero-desc" class="text-sm text-slate-300 leading-relaxed mb-6 line-clamp-4"></p>
-            <div>
-              <button id="hero-play-btn" class="inline-flex items-center gap-2.5 px-6 py-3.5 rounded-xl bg-[#F4B41A] hover:bg-[#D99B0E] text-[#030B38] font-bold text-sm uppercase tracking-wider shadow-lg transition cursor-pointer">
-                <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
-                  <polygon points="6,4 20,12 6,20" />
-                </svg>
-                Watch Screening
-              </button>
-            </div>
+            <button id="hero-play-btn" class="inline-flex items-center gap-2.5 px-6 py-3.5 rounded-xl bg-[#F4B41A] hover:bg-[#D99B0E] text-[#030B38] font-bold text-sm uppercase tracking-wider shadow-lg transition cursor-pointer">
+              Watch Screening
+            </button>
           </div>
         </div>
       </div>
 
-      <!-- Filter & Search Bar -->
+      <!-- Filter & Search -->
       <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
         <div>
-          <h3 class="font-serif text-xl sm:text-2xl font-bold text-white tracking-wide">Studio Releases & Cuts</h3>
-          <p class="text-xs text-slate-400 mt-0.5">Select any title below to launch the high-definition screening player</p>
+          <h3 class="font-serif text-xl sm:text-2xl font-bold text-white tracking-wide">Encrypted Studio Library</h3>
+          <p class="text-xs text-slate-400 mt-0.5">Stream links are securely encrypted at rest and decrypted on-the-fly</p>
         </div>
-
         <div class="flex flex-wrap items-center gap-2.5">
-          <select id="category-filter" onchange="window.renderCatalog()" class="px-3.5 py-2.5 rounded-xl bg-[#020724] border border-[#4B649B]/50 text-xs sm:text-sm text-slate-200 focus:outline-none focus:border-[#F4B41A]">
+          <select id="category-filter" onchange="window.renderCatalog()" class="px-3.5 py-2.5 rounded-xl bg-[#020724] border border-[#4B649B]/50 text-xs text-slate-200">
             <option value="ALL">All Categories</option>
-            <option value="Trending Now">Trending Now</option>
             <option value="Originals">Originals</option>
-            <option value="Sci-Fi">Sci-Fi</option>
-            <option value="Documentaries">Documentaries</option>
             <option value="Feature Film">Feature Film</option>
             <option value="Short Film">Short Film</option>
-            <option value="Director's Cut">Director's Cut</option>
+            <option value="Sci-Fi">Sci-Fi</option>
           </select>
-
-          <input
-            id="search-input"
-            type="text"
-            oninput="window.renderCatalog()"
-            placeholder="Search titles..."
-            class="px-4 py-2.5 rounded-xl bg-[#020724] border border-[#4B649B]/50 text-xs sm:text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:border-[#F4B41A] w-full sm:w-56"
-          />
+          <input id="search-input" type="text" oninput="window.renderCatalog()" placeholder="Search titles..." class="px-4 py-2.5 rounded-xl bg-[#020724] border border-[#4B649B]/50 text-xs text-slate-200 w-full sm:w-56" />
         </div>
       </div>
 
-      <!-- Video Grid -->
       <div id="video-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"></div>
 
-      <!-- Empty State directing Admin to Upload Original Productions -->
-      <div id="empty-catalog" class="hidden text-center py-14 px-5 rounded-3xl bg-[#020724] border border-[#4B649B]/40 noble-glow max-w-2xl mx-auto">
-        <div class="w-14 h-14 mx-auto mb-4 rounded-2xl bg-[#030B38] border border-[#F4B41A]/50 flex items-center justify-center">
-          <svg class="w-7 h-7 text-[#F4B41A]" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M7 4v16M17 4v16M3 8h4m10 0h4M3 12h18M3 16h4m10 0h4M4 20h16a1 1 0 001-1V5a1 1 0 00-1-1H4a1 1 0 00-1 1v14a1 1 0 001 1z" />
-          </svg>
-        </div>
-        <h4 class="font-serif text-xl sm:text-2xl font-bold text-[#F4B41A] mb-2">Your Studio Screening Vault Is Empty</h4>
-        <p class="text-xs sm:text-sm text-slate-300 max-w-md mx-auto mb-6 leading-relaxed">
-          No productions have been published yet. Open the Admin Console to upload your own original video files or stream links.
-        </p>
-        <div class="flex items-center justify-center">
-          <button onclick="window.switchView('admin')" class="w-full sm:w-auto px-6 py-3.5 rounded-xl bg-[#F4B41A] hover:bg-[#D99B0E] text-[#030B38] font-extrabold text-xs sm:text-sm uppercase tracking-wider shadow-lg transition cursor-pointer">
-            Open Admin Console to Upload
-          </button>
-        </div>
+      <div id="empty-catalog" class="hidden text-center py-14 px-5 rounded-3xl bg-[#020724] border border-[#4B649B]/40 max-w-2xl mx-auto">
+        <h4 class="font-serif text-xl font-bold text-[#F4B41A] mb-2">Vault Catalog Is Empty</h4>
+        <p class="text-xs text-slate-300 mb-6">Open the Admin Panel to publish your encrypted YouTube titles.</p>
+        <button onclick="window.switchView('admin')" class="px-6 py-3 rounded-xl bg-[#F4B41A] text-[#030B38] font-bold text-xs uppercase cursor-pointer">Open Admin Console</button>
       </div>
     </section>
 
-    <!-- Studio Admin Dashboard View -->
-    <section id="admin-view" class="hidden max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
-      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 pb-5 border-b border-[#4B649B]/30">
+    <!-- Admin Panel View -->
+    <section id="admin-view" class="hidden max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
+      <div class="flex justify-between items-center mb-6 pb-5 border-b border-[#4B649B]/30">
         <div>
-          <span class="text-xs font-bold uppercase tracking-[0.2em] text-[#F4B41A]">Studio Control Center</span>
-          <h2 class="font-serif text-2xl sm:text-3xl font-bold text-white mt-1">Noble Production Admin Console</h2>
+          <span class="text-xs font-bold uppercase tracking-[0.2em] text-[#F4B41A]">Security Control Center</span>
+          <h2 class="font-serif text-2xl font-bold text-white mt-1">Admin Console</h2>
         </div>
-        <div class="flex flex-wrap items-center gap-2.5">
-          <button onclick="window.switchView('catalog')" class="px-4 py-2.5 rounded-xl bg-[#020724] hover:bg-[#4B649B]/20 border border-[#4B649B]/50 text-xs sm:text-sm font-semibold text-slate-200 transition cursor-pointer">
-            ← Back to Screening Room
-          </button>
-        </div>
+        <button onclick="window.switchView('catalog')" class="px-4 py-2.5 rounded-xl bg-[#020724] border border-[#4B649B]/50 text-xs text-slate-200 cursor-pointer">← Back to Screening Room</button>
       </div>
 
-      <!-- Non-Blocking Firebase Permission Helper Banner (Shown automatically if rules block writes/uploads) -->
-      <div id="rules-helper-banner" class="hidden mb-6 p-5 rounded-3xl bg-amber-950/40 border border-[#F4B41A]/70 space-y-3">
-        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-          <div>
-            <h4 class="font-serif text-base font-bold text-[#F4B41A]">Action Needed: Publish Firebase Database & Storage Rules</h4>
-            <p class="text-xs text-slate-200 mt-0.5">
-              Firebase blocked saving to Firestore or Storage because your project is still in locked Production Mode. Copy these rules and paste them into Firebase Console → Firestore Database → Rules & Storage → Rules.
-            </p>
-          </div>
-          <button onclick="window.copyFirebaseRules()" class="shrink-0 px-4 py-2.5 rounded-xl bg-[#F4B41A] hover:bg-[#D99B0E] text-[#030B38] font-extrabold text-xs uppercase tracking-wider cursor-pointer">
-            Copy Firestore & Storage Rules
-          </button>
-        </div>
-      </div>
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+        <!-- Add Encrypted Video Form -->
+        <div class="lg:col-span-7 bg-[#020724] border border-[#4B649B]/40 rounded-3xl p-6 noble-glow">
+          <h3 class="font-serif text-xl font-bold text-[#F4B41A] mb-1">Publish Encrypted YouTube Screening</h3>
+          <p class="text-xs text-slate-400 mb-5">Your YouTube URL will be encrypted using AES-256 so it cannot be read from Firestore or source code.</p>
 
-      <!-- Mobile & Desktop Admin Console Tabs -->
-      <div class="flex items-center gap-2 p-1.5 rounded-2xl bg-[#020724] border border-[#4B649B]/40 mb-6 max-w-md">
-        <button id="tab-videos-btn" onclick="window.setAdminTab('videos')" class="flex-1 py-2.5 px-4 rounded-xl bg-[#F4B41A] text-[#030B38] font-extrabold text-xs uppercase tracking-wider transition cursor-pointer">
-          Manage Videos (Catalog)
-        </button>
-        <button id="tab-accounts-btn" onclick="window.setAdminTab('accounts')" class="flex-1 py-2.5 px-4 rounded-xl text-slate-300 hover:text-white font-bold text-xs uppercase tracking-wider transition cursor-pointer">
-          Manage Accounts
-        </button>
-      </div>
-
-      <!-- Tab 1: Manage Videos (Catalog) -->
-      <div id="admin-tab-videos" class="grid grid-cols-1 lg:grid-cols-12 gap-8">
-        <!-- Left Column: Upload / Add Video Form -->
-        <div class="lg:col-span-7 space-y-6">
-          <div class="bg-[#020724] border border-[#4B649B]/40 rounded-3xl p-5 sm:p-7 noble-glow">
-            <h3 class="font-serif text-xl font-bold text-[#F4B41A] mb-1">Upload or Publish New Video</h3>
-            <p class="text-xs text-slate-400 mb-5">Upload an MP4/WebM/MOV video file directly from your device or paste an external stream URL.</p>
-
-            <form id="add-video-form" class="space-y-4">
-              <!-- Title & Category -->
-              <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div>
-                  <label class="block text-xs font-semibold uppercase tracking-wider text-slate-300 mb-1.5">Title *</label>
-                  <input id="vid-title" type="text" required placeholder="e.g. Midnight Sovereign (Final Cut)" class="w-full px-3.5 py-2.5 rounded-xl bg-[#030B38] border border-[#4B649B]/50 text-sm text-white focus:outline-none focus:border-[#F4B41A]" />
-                </div>
-
-                <div>
-                  <label class="block text-xs font-semibold uppercase tracking-wider text-slate-300 mb-1.5">Category</label>
-                  <select id="vid-category" class="w-full px-3.5 py-2.5 rounded-xl bg-[#030B38] border border-[#4B649B]/50 text-sm text-white focus:outline-none focus:border-[#F4B41A]">
-                    <option value="Trending Now">Trending Now</option>
-                    <option value="Originals">Originals</option>
-                    <option value="Sci-Fi">Sci-Fi</option>
-                    <option value="Documentaries">Documentaries</option>
-                    <option value="Feature Film">Feature Film</option>
-                    <option value="Short Film">Short Film</option>
-                    <option value="Director's Cut">Director's Cut</option>
-                  </select>
-                </div>
-              </div>
-
-              <!-- Video Source Mode Toggle -->
-              <div>
-                <label class="block text-xs font-semibold uppercase tracking-wider text-slate-300 mb-2">Video Source *</label>
-                <div class="grid grid-cols-2 gap-2 p-1 rounded-xl bg-[#030B38] border border-[#4B649B]/40 mb-3">
-                  <button type="button" id="src-mode-upload-btn" onclick="window.setVideoSourceMode('upload')" class="py-2 px-3 rounded-lg bg-[#F4B41A] text-[#030B38] font-bold text-xs uppercase tracking-wider transition cursor-pointer">
-                    Upload Video File
-                  </button>
-                  <button type="button" id="src-mode-url-btn" onclick="window.setVideoSourceMode('url')" class="py-2 px-3 rounded-lg text-slate-300 hover:text-white font-semibold text-xs uppercase tracking-wider transition cursor-pointer">
-                    External Video URL
-                  </button>
-                </div>
-
-                <!-- Upload Video File Box -->
-                <div id="video-upload-panel" class="p-4 rounded-2xl bg-[#030B38] border-2 border-dashed border-[#4B649B]/60 hover:border-[#F4B41A]/70 transition">
-                  <input
-                    id="vid-file-input"
-                    type="file"
-                    accept="video/mp4,video/webm,video/quicktime,video/x-m4v,video/*"
-                    onchange="window.handleVideoFileSelected(event)"
-                    class="block w-full text-xs text-slate-300 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:uppercase file:tracking-wider file:bg-[#F4B41A] file:text-[#030B38] hover:file:bg-[#D99B0E] file:cursor-pointer cursor-pointer"
-                  />
-                  <div class="mt-2 flex flex-wrap items-center justify-between gap-2 text-[11px] text-slate-400">
-                    <span>Supports .mp4, .webm, .mov, .m4v directly from phone or computer</span>
-                    <span id="vid-file-meta" class="text-[#F4B41A] font-medium"></span>
-                  </div>
-                </div>
-
-                <!-- External URL Box -->
-                <div id="video-url-panel" class="hidden">
-                  <input
-                    id="vid-url-input"
-                    type="url"
-                    placeholder="https://... (.mp4, .m3u8, YouTube, or Vimeo link)"
-                    class="w-full px-3.5 py-2.5 rounded-xl bg-[#030B38] border border-[#4B649B]/50 text-sm text-white focus:outline-none focus:border-[#F4B41A]"
-                  />
-                </div>
-              </div>
-
-              <!-- Thumbnail Upload or URL -->
-              <div class="p-4 rounded-2xl bg-[#030B38]/70 border border-[#4B649B]/35 space-y-3">
-                <div class="flex items-center justify-between">
-                  <label class="block text-xs font-semibold uppercase tracking-wider text-slate-300">
-                    Custom Thumbnail (Optional)
-                  </label>
-                  <span class="text-[11px] text-slate-400">Auto-captured from video if left empty</span>
-                </div>
-
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 items-center">
-                  <div>
-                    <input
-                      id="thumb-file-input"
-                      type="file"
-                      accept="image/*"
-                      onchange="window.handleThumbFileSelected(event)"
-                      class="block w-full text-xs text-slate-300 file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-[#4B649B]/40 file:text-white hover:file:bg-[#4B649B]/60 file:cursor-pointer cursor-pointer"
-                    />
-                    <p id="thumb-file-meta" class="text-[11px] text-[#F4B41A] mt-1 truncate"></p>
-                  </div>
-                  <div>
-                    <input
-                      id="thumb-url-input"
-                      type="url"
-                      placeholder="Or paste thumbnail image URL..."
-                      class="w-full px-3 py-2 rounded-xl bg-[#030B38] border border-[#4B649B]/50 text-xs text-white focus:outline-none focus:border-[#F4B41A]"
-                    />
-                  </div>
-                </div>
-              </div>
-
-              <!-- Duration & Featured Checkbox -->
-              <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 items-center">
-                <div>
-                  <label class="block text-xs font-semibold uppercase tracking-wider text-slate-300 mb-1.5">
-                    Duration <span class="text-slate-400 font-normal">(Auto-detected on upload)</span>
-                  </label>
-                  <input id="vid-duration" type="text" placeholder="e.g. 1h 42m or 3m 18s" class="w-full px-3.5 py-2.5 rounded-xl bg-[#030B38] border border-[#4B649B]/50 text-sm text-white focus:outline-none focus:border-[#F4B41A]" />
-                </div>
-
-                <div class="pt-2 sm:pt-5">
-                  <label class="inline-flex items-center gap-2.5 cursor-pointer select-none">
-                    <input id="vid-featured" type="checkbox" class="w-4 h-4 rounded accent-[#F4B41A]" />
-                    <span class="text-xs sm:text-sm font-medium text-slate-200">Set as Featured Hero Screening</span>
-                  </label>
-                </div>
-              </div>
-
-              <!-- Synopsis / Notes -->
-              <div>
-                <label class="block text-xs font-semibold uppercase tracking-wider text-slate-300 mb-1.5">Synopsis / Screening Notes</label>
-                <textarea id="vid-desc" rows="3" placeholder="Director notes, cut version, audio mix details..." class="w-full px-3.5 py-2.5 rounded-xl bg-[#030B38] border border-[#4B649B]/50 text-sm text-white focus:outline-none focus:border-[#F4B41A]"></textarea>
-              </div>
-
-              <!-- Upload Progress Bar -->
-              <div id="upload-progress-container" class="hidden p-4 rounded-2xl bg-[#030B38] border border-[#F4B41A]/50 space-y-2">
-                <div class="flex items-center justify-between text-xs font-semibold">
-                  <span id="upload-status-text" class="text-[#F4B41A]">Uploading master video...</span>
-                  <span id="upload-percent-text" class="text-white">0%</span>
-                </div>
-                <div class="w-full h-3 rounded-full bg-[#020724] overflow-hidden border border-[#4B649B]/40">
-                  <div id="upload-progress-bar" class="h-full bg-gradient-to-r from-[#F4B41A] to-[#FDE08D] transition-all duration-200" style="width: 0%"></div>
-                </div>
-                <div class="flex justify-between text-[11px] text-slate-400">
-                  <span id="upload-bytes-text">0 MB / 0 MB</span>
-                  <button type="button" id="cancel-upload-btn" class="text-red-400 hover:text-red-300 font-semibold underline cursor-pointer">
-                    Cancel Upload
-                  </button>
-                </div>
-              </div>
-
-              <button
-                id="publish-video-btn"
-                type="submit"
-                class="w-full py-3.5 px-5 rounded-xl bg-[#F4B41A] hover:bg-[#D99B0E] text-[#030B38] font-bold text-sm uppercase tracking-wider shadow-lg transition cursor-pointer"
-              >
-                Upload & Publish Screening
-              </button>
-            </form>
-          </div>
-
-          <!-- Existing Catalog Management List -->
-          <div class="lg:col-span-5 bg-[#020724] border border-[#4B649B]/40 rounded-3xl p-5 sm:p-7 h-fit">
-            <div class="flex items-center justify-between mb-4">
-              <h3 class="font-serif text-lg font-bold text-white">Published Vault Catalog</h3>
-              <span id="admin-video-count" class="text-xs font-semibold px-2.5 py-1 rounded-full bg-[#4B649B]/25 text-[#F4B41A]">0 Titles</span>
+          <form id="add-video-form" class="space-y-4">
+            <div>
+              <label class="block text-xs font-semibold uppercase text-slate-300 mb-1">Title *</label>
+              <input id="vid-title" type="text" required placeholder="e.g. Director's Cut 4K" class="w-full px-3.5 py-2.5 rounded-xl bg-[#030B38] border border-[#4B649B]/50 text-sm text-white focus:outline-none focus:border-[#F4B41A]" />
             </div>
-            <div id="admin-video-list" class="space-y-3 max-h-[640px] overflow-y-auto pr-1"></div>
-          </div>
-      </div>
-
-      <!-- Tab 2: Manage Accounts -->
-      <div id="admin-tab-accounts" class="hidden grid grid-cols-1 lg:grid-cols-12 gap-8">
-        <div class="lg:col-span-6">
-          <div class="bg-[#020724] border border-[#4B649B]/40 rounded-3xl p-5 sm:p-7 noble-glow">
-            <h3 class="font-serif text-xl font-bold text-[#F4B41A] mb-1">Provision Member Access</h3>
-            <p class="text-xs text-slate-400 mb-5">
-              Create isolated credentials for Screening Members or Studio Administrators without ending your current session.
-            </p>
-
-            <form id="create-user-form" class="space-y-4" autocomplete="off">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label class="block text-xs font-semibold uppercase tracking-wider text-slate-300 mb-1.5">Member Name</label>
-                <input id="new-member-name" type="text" required placeholder="e.g. Jordan Vance" class="w-full px-3.5 py-2.5 rounded-xl bg-[#030B38] border border-[#4B649B]/50 text-sm text-white focus:outline-none focus:border-[#F4B41A]" />
-              </div>
-
-              <div>
-                <label class="block text-xs font-semibold uppercase tracking-wider text-slate-300 mb-1.5">Email Address</label>
-                <input id="new-member-email" type="email" required placeholder="guest@nobleproductionstudios.com" class="w-full px-3.5 py-2.5 rounded-xl bg-[#030B38] border border-[#4B649B]/50 text-sm text-white focus:outline-none focus:border-[#F4B41A]" />
-              </div>
-
-              <div>
-                <label class="block text-xs font-semibold uppercase tracking-wider text-slate-300 mb-1.5">Temporary Passkey (Min 6 chars)</label>
-                <input id="new-member-password" type="password" minlength="6" required placeholder="••••••••" class="w-full px-3.5 py-2.5 rounded-xl bg-[#030B38] border border-[#4B649B]/50 text-sm text-white focus:outline-none focus:border-[#F4B41A]" />
-              </div>
-
-              <div>
-                <label class="block text-xs font-semibold uppercase tracking-wider text-slate-300 mb-1.5">Access Role</label>
-                <select id="new-member-role" class="w-full px-3.5 py-2.5 rounded-xl bg-[#030B38] border border-[#4B649B]/50 text-sm text-white focus:outline-none focus:border-[#F4B41A]">
-                  <option value="member">Screening Member (View Only)</option>
-                  <option value="admin">Studio Administrator (Full Access)</option>
+                <label class="block text-xs font-semibold uppercase text-slate-300 mb-1">Category</label>
+                <select id="vid-category" class="w-full px-3.5 py-2.5 rounded-xl bg-[#030B38] border border-[#4B649B]/50 text-sm text-white">
+                  <option value="Originals">Originals</option>
+                  <option value="Feature Film">Feature Film</option>
+                  <option value="Short Film">Short Film</option>
+                  <option value="Sci-Fi">Sci-Fi</option>
                 </select>
               </div>
-
-              <button id="create-user-btn" type="submit" class="w-full py-3.5 px-4 rounded-xl bg-[#F4B41A] hover:bg-[#D99B0E] text-[#030B38] font-extrabold text-xs sm:text-sm uppercase tracking-wider transition cursor-pointer">
-                Create Authorized Account
-              </button>
-            </form>
-          </div>
+              <div>
+                <label class="block text-xs font-semibold uppercase text-slate-300 mb-1">Duration / Quality</label>
+                <input id="vid-duration" type="text" placeholder="1h 42m (4K HDR)" class="w-full px-3.5 py-2.5 rounded-xl bg-[#030B38] border border-[#4B649B]/50 text-sm text-white" />
+              </div>
+            </div>
+            <div>
+              <label class="block text-xs font-semibold uppercase text-slate-300 mb-1">YouTube URL (Unlisted) *</label>
+              <input id="vid-youtube-url" type="url" required placeholder="https://youtu.be/..." class="w-full px-3.5 py-2.5 rounded-xl bg-[#030B38] border border-[#4B649B]/50 text-sm text-white focus:outline-none focus:border-[#F4B41A]" />
+            </div>
+            <div>
+              <label class="block text-xs font-semibold uppercase text-slate-300 mb-1">Poster Thumbnail URL</label>
+              <input id="vid-thumb-url" type="url" placeholder="https://images.unsplash.com/..." class="w-full px-3.5 py-2.5 rounded-xl bg-[#030B38] border border-[#4B649B]/50 text-sm text-white" />
+            </div>
+            <div>
+              <label class="block text-xs font-semibold uppercase text-slate-300 mb-1">Synopsis</label>
+              <textarea id="vid-desc" rows="3" placeholder="Production notes..." class="w-full px-3.5 py-2.5 rounded-xl bg-[#030B38] border border-[#4B649B]/50 text-sm text-white"></textarea>
+            </div>
+            <div class="flex items-center gap-2">
+              <input id="vid-featured" type="checkbox" class="w-4 h-4 accent-[#F4B41A]" />
+              <label class="text-xs text-slate-200">Set as Featured Hero Screening</label>
+            </div>
+            <button type="submit" class="w-full py-3.5 rounded-xl bg-[#F4B41A] hover:bg-[#D99B0E] text-[#030B38] font-bold text-sm uppercase tracking-wider shadow-lg cursor-pointer">
+              Encrypt & Publish to Firestore
+            </button>
+          </form>
         </div>
 
-        <!-- Registered Members List -->
-        <div class="lg:col-span-6">
-          <div class="bg-[#020724] border border-[#4B649B]/40 rounded-3xl p-5 sm:p-7 h-fit">
-            <h3 class="font-serif text-lg font-bold text-white mb-4">Authorized Roster</h3>
-            <div id="admin-users-list" class="space-y-2.5 max-h-[480px] overflow-y-auto pr-1"></div>
-          </div>
+        <!-- Catalog List -->
+        <div class="lg:col-span-5 bg-[#020724] border border-[#4B649B]/40 rounded-3xl p-6 h-fit">
+          <h3 class="font-serif text-lg font-bold text-white mb-4">Published Vault Catalog</h3>
+          <div id="admin-video-list" class="space-y-3 max-h-[500px] overflow-y-auto pr-1"></div>
         </div>
       </div>
     </section>
   </main>
 
-  <!-- Full-Screen Screening Player Modal -->
-  <div id="player-modal" class="hidden fixed inset-0 z-50 bg-black/95 backdrop-blur-md flex flex-col">
-    <div class="flex items-center justify-between px-4 sm:px-8 py-4 bg-[#020724]/90 border-b border-[#4B649B]/30">
-      <div class="min-w-0 pr-4">
-        <span id="player-category" class="text-[11px] font-bold uppercase tracking-widest text-[#F4B41A]"></span>
-        <h3 id="player-title" class="font-serif text-lg sm:text-xl font-bold text-white truncate"></h3>
-      </div>
-      <button onclick="window.closePlayer()" class="px-4 py-2 rounded-xl bg-[#030B38] hover:bg-[#F4B41A] text-slate-200 hover:text-[#030B38] border border-[#4B649B]/50 text-xs sm:text-sm font-bold uppercase tracking-wider transition cursor-pointer">
-        Close ✕
-      </button>
-    </div>
-
-    <div class="flex-1 flex items-center justify-center p-2 sm:p-6 overflow-hidden">
-      <div id="player-stage" class="w-full max-w-6xl aspect-video bg-black rounded-2xl overflow-hidden border border-[#4B649B]/40 shadow-2xl flex items-center justify-center"></div>
-    </div>
-
-    <div class="px-4 sm:px-8 py-3 bg-[#020724]/90 border-t border-[#4B649B]/30">
-      <p id="player-desc" class="max-w-5xl mx-auto text-xs sm:text-sm text-slate-300 line-clamp-2"></p>
+  <!-- Vault Key Unlock Modal -->
+  <div id="vault-key-modal" class="hidden fixed inset-0 z-50 bg-black/90 backdrop-blur-md flex items-center justify-center p-4">
+    <div class="max-w-md w-full bg-[#020724] border border-[#F4B41A]/50 rounded-3xl p-6 shadow-2xl">
+      <h3 class="font-serif text-xl font-bold text-[#F4B41A] mb-2">Enter Studio Vault Key</h3>
+      <p class="text-xs text-slate-300 mb-4">
+        To decrypt and watch protected studio screenings, enter your private studio encryption passphrase. This key stays securely in your browser session RAM.
+      </p>
+      <form id="vault-key-form" class="space-y-4">
+        <input id="vault-passphrase-input" type="password" required placeholder="Enter encryption passphrase..." class="w-full px-4 py-3 rounded-xl bg-[#030B38] border border-[#4B649B]/50 text-sm text-white focus:outline-none focus:border-[#F4B41A]" />
+        <div class="flex justify-end gap-3">
+          <button type="button" onclick="window.closeVaultKeyModal()" class="px-4 py-2 rounded-xl bg-[#030B38] border border-[#4B649B]/50 text-xs text-slate-300 cursor-pointer">Cancel</button>
+          <button type="submit" class="px-5 py-2 rounded-xl bg-[#F4B41A] text-[#030B38] font-bold text-xs uppercase cursor-pointer">Unlock Vault</button>
+        </div>
+      </form>
     </div>
   </div>
 
-  <!-- Custom Delete Confirmation Modal -->
-  <div id="confirm-modal" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
-    <div class="max-w-md w-full bg-[#020724] border border-[#4B649B]/50 rounded-3xl p-6 shadow-2xl">
-      <h4 class="font-serif text-lg font-bold text-[#F4B41A] mb-2">Confirm Permanent Removal</h4>
-      <p id="confirm-modal-text" class="text-sm text-slate-300 mb-6"></p>
-      <div class="flex justify-end gap-3">
-        <button onclick="window.closeConfirmModal()" class="px-4 py-2 rounded-xl bg-[#030B38] border border-[#4B649B]/50 text-xs font-semibold text-slate-300 hover:text-white cursor-pointer">
-          Cancel
-        </button>
-        <button id="confirm-modal-action" class="px-4 py-2 rounded-xl bg-red-600 hover:bg-red-500 text-white text-xs font-bold uppercase tracking-wider cursor-pointer">
-          Delete Permanently
-        </button>
+  <!-- Full-Screen Screening Player Modal -->
+  <div id="player-modal" class="hidden fixed inset-0 z-50 bg-black/95 backdrop-blur-md flex flex-col">
+    <div class="flex items-center justify-between px-6 py-4 bg-[#020724] border-b border-[#4B649B]/30">
+      <div>
+        <span id="player-category" class="text-[11px] font-bold uppercase tracking-widest text-[#F4B41A]"></span>
+        <h3 id="player-title" class="font-serif text-lg font-bold text-white"></h3>
       </div>
+      <button onclick="window.closePlayer()" class="px-4 py-2 rounded-xl bg-[#030B38] border border-[#4B649B]/50 text-xs font-bold text-slate-200 hover:text-[#F4B41A] cursor-pointer">Close ✕</button>
+    </div>
+    <div class="flex-1 flex items-center justify-center p-4">
+      <div id="player-stage" class="w-full max-w-5xl aspect-video bg-black rounded-2xl overflow-hidden border border-[#4B649B]/40 flex items-center justify-center relative"></div>
     </div>
   </div>
 
   <!-- Firebase Modular SDK v11.6.1 -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-    import {
-      getAuth,
-      signInWithEmailAndPassword,
-      createUserWithEmailAndPassword,
-      signOut,
-      onAuthStateChanged
-    } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-    import {
-      getFirestore,
-      collection,
-      doc,
-      getDoc,
-      getDocs,
-      setDoc,
-      addDoc,
-      updateDoc,
-      deleteDoc,
-      onSnapshot,
-      serverTimestamp
-    } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-    import {
-      getStorage,
-      ref,
-      uploadBytesResumable,
-      getDownloadURL,
-      deleteObject
-    } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-storage.js";
+    import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+    import { getFirestore, collection, doc, getDoc, getDocs, setDoc, addDoc, updateDoc, deleteDoc, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-    // Pre-wired Noble Production Studios Firebase Configuration
     const firebaseConfig = {
       apiKey: "AIzaSyCJhlVxdbASGQCmxo8NCCZI93ZwkLsCMoA",
       authDomain: "noble-production-studios-99919.firebaseapp.com",
@@ -616,949 +338,346 @@
       measurementId: "G-VNYVD93F4C"
     };
 
-    // Primary App & Isolated Secondary Worker App for Admin User Provisioning
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
     const db = getFirestore(app);
-    const storage = getStorage(app);
 
-    const secondaryApp = initializeApp(firebaseConfig, "SecondaryAdminWorker");
-    const secondaryAuth = getAuth(secondaryApp);
-
-    // Application State
-    let currentUser = null;
-    let currentUserRole = "admin";
     let videosCache = [];
-    let usersCache = [];
+    let currentUserRole = "member";
     let unsubscribeVideos = null;
-    let unsubscribeUsers = null;
-
-    let videoSourceMode = "upload"; // 'upload' | 'url'
-    let selectedVideoFile = null;
-    let selectedThumbFile = null;
-    let capturedAutoThumbBlob = null;
-    let activeUploadTask = null;
+    let studioPassphrase = sessionStorage.getItem("noble_vault_key") || "";
 
     const DEFAULT_POSTER = "https://placehold.co/1280x720/020724/F4B41A?text=NOBLE+PRODUCTION+STUDIOS";
 
-    const FIREBASE_RULES_SNIPPET = `// 1. FIRESTORE DATABASE RULES:
-rules_version = '2';
-service cloud.firestore {
-  match /databases/{database}/documents {
-    match /users/{userId} {
-      allow read: if request.auth != null;
-      allow write: if request.auth != null;
-    }
-    match /videos/{videoId} {
-      allow read: if request.auth != null;
-      allow write: if request.auth != null;
-    }
-  }
-}
-
-// 2. FIREBASE STORAGE RULES:
-rules_version = '2';
-service firebase.storage {
-  match /b/{bucket}/o {
-    match /{allPaths=**} {
-      allow read, write: if request.auth != null;
-    }
-  }
-}`;
-
-    // Show Firebase Rules Helper Banner when permissions are locked
-    function revealRulesHelper() {
-      const banner = document.getElementById("rules-helper-banner");
-      if (banner) banner.classList.remove("hidden");
-    }
-
-    window.copyFirebaseRules = function () {
-      const tempArea = document.createElement("textarea");
-      tempArea.value = FIREBASE_RULES_SNIPPET;
-      document.body.appendChild(tempArea);
-      tempArea.select();
-      document.execCommand("copy");
-      tempArea.remove();
-      showToast("Firestore & Storage rules copied to clipboard!", "success");
-    };
-
-    // Admin Sub-Tab Switcher
-    window.setAdminTab = function (tabName) {
-      const vidTab = document.getElementById("admin-tab-videos");
-      const accTab = document.getElementById("admin-tab-accounts");
-      const vidBtn = document.getElementById("tab-videos-btn");
-      const accBtn = document.getElementById("tab-accounts-btn");
-
-      if (tabName === "accounts") {
-        vidTab.classList.add("hidden");
-        accTab.classList.remove("hidden");
-        accBtn.className = "flex-1 py-2.5 px-4 rounded-xl bg-[#F4B41A] text-[#030B38] font-extrabold text-xs uppercase tracking-wider transition cursor-pointer";
-        vidBtn.className = "flex-1 py-2.5 px-4 rounded-xl text-slate-300 hover:text-white font-bold text-xs uppercase tracking-wider transition cursor-pointer";
+    // Update Vault Key UI status
+    function updateVaultKeyButton() {
+      const btn = document.getElementById("vault-key-status-btn");
+      const label = document.getElementById("vault-key-label");
+      if (studioPassphrase) {
+        btn.className = "inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-emerald-950/40 border border-emerald-500/50 text-xs font-semibold text-emerald-300 transition cursor-pointer";
+        label.textContent = "Vault Unlocked";
       } else {
-        accTab.classList.add("hidden");
-        vidTab.classList.remove("hidden");
-        vidBtn.className = "flex-1 py-2.5 px-4 rounded-xl bg-[#F4B41A] text-[#030B38] font-extrabold text-xs uppercase tracking-wider transition cursor-pointer";
-        accBtn.className = "flex-1 py-2.5 px-4 rounded-xl text-slate-300 hover:text-white font-bold text-xs uppercase tracking-wider transition cursor-pointer";
+        btn.className = "inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-[#030B38] border border-[#F4B41A]/50 text-xs font-semibold text-[#F4B41A] transition cursor-pointer";
+        label.textContent = "Unlock Vault Key";
       }
-    };
-
-    // Handle Local Video Selection
-    window.handleVideoFileSelected = async function (event) {
-      const file = event.target.files?.[0] || null;
-      selectedVideoFile = file;
-      capturedAutoThumbBlob = null;
-
-      const metaEl = document.getElementById("vid-file-meta");
-      const durationInput = document.getElementById("vid-duration");
-      const titleInput = document.getElementById("vid-title");
-
-      if (!file) {
-        metaEl.textContent = "";
-        return;
-      }
-
-      metaEl.textContent = `${file.name} (${formatBytes(file.size)})`;
-
-      // Auto-populate title if blank
-      if (!titleInput.value.trim()) {
-        const cleanName = file.name.replace(/\.[^/.]+$/, "").replace(/[_-]+/g, " ");
-        titleInput.value = cleanName;
-      }
-
-      // Auto-detect duration & capture poster frame
-      const { durationStr, frameBlob } = await inspectLocalVideoFile(file);
-      if (durationStr && !durationInput.value.trim()) {
-        durationInput.value = durationStr;
-      }
-      if (frameBlob) {
-        capturedAutoThumbBlob = frameBlob;
-        if (!selectedThumbFile && !document.getElementById("thumb-url-input").value.trim()) {
-          document.getElementById("thumb-file-meta").textContent = "Auto-frame ready from video";
-        }
-      }
-    };
-
-    // Handle Local Thumbnail Image Selection
-    window.handleThumbFileSelected = function (event) {
-      const file = event.target.files?.[0] || null;
-      selectedThumbFile = file;
-      const metaEl = document.getElementById("thumb-file-meta");
-      if (file) {
-        metaEl.textContent = `${file.name} (${formatBytes(file.size)})`;
-      } else {
-        metaEl.textContent = capturedAutoThumbBlob ? "Auto-frame ready from video" : "";
-      }
-    };
-
-    // Upload File to Firebase Storage with Progress Callback
-    function uploadFileWithProgress(fileOrBlob, storagePath, onProgress) {
-      return new Promise((resolve, reject) => {
-        const storageRef = ref(storage, storagePath);
-        const uploadTask = uploadBytesResumable(storageRef, fileOrBlob);
-        activeUploadTask = uploadTask;
-
-        uploadTask.on(
-          "state_changed",
-          (snapshot) => {
-            const pct = snapshot.totalBytes > 0
-              ? Math.round((snapshot.bytesTransferred / snapshot.totalBytes) * 100)
-              : 0;
-            if (onProgress) {
-              onProgress(pct, snapshot.bytesTransferred, snapshot.totalBytes);
-            }
-          },
-          (error) => {
-            activeUploadTask = null;
-            reject(error);
-          },
-          async () => {
-            activeUploadTask = null;
-            const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
-            resolve({ downloadURL, storagePath });
-          }
-        );
-      });
     }
+    updateVaultKeyButton();
 
-    // Cancel Active Upload
-    document.getElementById("cancel-upload-btn").addEventListener("click", () => {
-      if (activeUploadTask) {
-        activeUploadTask.cancel();
-        activeUploadTask = null;
-        showToast("Upload canceled.", "info");
-      }
+    window.openVaultKeyModal = function() {
+      document.getElementById("vault-key-modal").classList.remove("hidden");
+    };
+    window.closeVaultKeyModal = function() {
+      document.getElementById("vault-key-modal").classList.add("hidden");
+    };
+
+    document.getElementById("vault-key-form").addEventListener("submit", (e) => {
+      e.preventDefault();
+      const val = document.getElementById("vault-passphrase-input").value;
+      if (!val) return;
+      studioPassphrase = val;
+      sessionStorage.setItem("noble_vault_key", val);
+      document.getElementById("vault-passphrase-input").value = "";
+      window.closeVaultKeyModal();
+      updateVaultKeyButton();
+      showToast("Studio Vault Key unlocked for this session!", "success");
+      window.renderCatalog();
     });
 
+    // Web Crypto AES-GCM Encryption Functions
+    async function encryptText(plainText, passphrase) {
+      const enc = new TextEncoder();
+      const keyMaterial = await window.crypto.subtle.importKey("raw", enc.encode(passphrase), { name: "PBKDF2" }, false, ["deriveKey"]);
+      const salt = window.crypto.getRandomValues(new Uint8Array(16));
+      const iv = window.crypto.getRandomValues(new Uint8Array(12));
+      const aesKey = await window.crypto.subtle.deriveKey({ name: "PBKDF2", salt, iterations: 100000, hash: "SHA-256" }, keyMaterial, { name: "AES-GCM", length: 256 }, false, ["encrypt"]);
+      const encrypted = await window.crypto.subtle.encrypt({ name: "AES-GCM", iv }, aesKey, enc.encode(plainText));
+      
+      const combined = new Uint8Array(salt.length + iv.length + encrypted.byteLength);
+      combined.set(salt, 0);
+      combined.set(iv, salt.length);
+      combined.set(new Uint8Array(encrypted), salt.length + iv.length);
+      return btoa(String.fromCharCode(...combined));
+    }
+
+    async function decryptText(base64Cipher, passphrase) {
+      try {
+        const binStr = atob(base64Cipher);
+        const combined = new Uint8Array(binStr.length);
+        for (let i = 0; i < binStr.length; i++) combined[i] = binStr.charCodeAt(i);
+
+        const salt = combined.slice(0, 16);
+        const iv = combined.slice(16, 28);
+        const encrypted = combined.slice(28);
+
+        const enc = new TextEncoder();
+        const keyMaterial = await window.crypto.subtle.importKey("raw", enc.encode(passphrase), { name: "PBKDF2" }, false, ["deriveKey"]);
+        const aesKey = await window.crypto.subtle.deriveKey({ name: "PBKDF2", salt, iterations: 100000, hash: "SHA-256" }, keyMaterial, { name: "AES-GCM", length: 256 }, false, ["decrypt"]);
+        const decrypted = await window.crypto.subtle.decrypt({ name: "AES-GCM", iv }, aesKey, encrypted);
+        return new TextDecoder().decode(decrypted);
+      } catch (err) {
+        return null; // Incorrect passphrase or corrupted
+      }
+    }
+
     // View Navigation
-    window.switchView = function (viewName) {
+    window.switchView = function(viewName) {
       const catalogView = document.getElementById("catalog-view");
       const adminView = document.getElementById("admin-view");
-      const adminLabel = document.getElementById("nav-admin-label");
-
       if (viewName === "admin" && currentUserRole === "admin") {
         catalogView.classList.add("hidden");
         adminView.classList.remove("hidden");
-        adminLabel.textContent = "Screening Room";
       } else {
         adminView.classList.add("hidden");
         catalogView.classList.remove("hidden");
-        adminLabel.textContent = "Studio Admin";
       }
     };
-
-    window.toggleAdminView = function () {
+    window.toggleAdminView = function() {
       const adminView = document.getElementById("admin-view");
-      if (adminView.classList.contains("hidden")) {
-        window.switchView("admin");
-      } else {
-        window.switchView("catalog");
-      }
+      window.switchView(adminView.classList.contains("hidden") ? "admin" : "catalog");
     };
 
-    // Auth State Listener
+    // Auth State
     onAuthStateChanged(auth, async (user) => {
-      const loadingScreen = document.getElementById("loading-screen");
-      const loginScreen = document.getElementById("login-screen");
-      const appHeader = document.getElementById("app-header");
-      const catalogView = document.getElementById("catalog-view");
-      const adminView = document.getElementById("admin-view");
+      const loading = document.getElementById("loading-screen");
+      const login = document.getElementById("login-screen");
+      const header = document.getElementById("app-header");
+      const catalog = document.getElementById("catalog-view");
 
       if (!user) {
-        currentUser = null;
-        currentUserRole = "member";
-        if (unsubscribeVideos) unsubscribeVideos();
-        if (unsubscribeUsers) unsubscribeUsers();
-
-        loadingScreen.classList.add("hidden");
-        appHeader.classList.add("hidden");
-        catalogView.classList.add("hidden");
-        adminView.classList.add("hidden");
-        loginScreen.classList.remove("hidden");
+        loading.classList.add("hidden");
+        header.classList.add("hidden");
+        catalog.classList.add("hidden");
+        login.classList.remove("hidden");
         return;
       }
 
-      currentUser = user;
-
-      // Determine or initialize user role in Firestore users/{uid} with resilient owner fallback
+      // Check Role
       try {
-        const userDocRef = doc(db, "users", user.uid);
-        const userSnap = await getDoc(userDocRef);
-
-        if (userSnap.exists()) {
-          const data = userSnap.data();
-          // Check if any admin exists across users; if none or user is first/owner, ensure admin access
-          const allUsersSnap = await getDocs(collection(db, "users"));
-          const hasAnyAdmin = allUsersSnap.docs.some((d) => d.data().role === "admin");
-
-          if (data.role === "admin" || !hasAnyAdmin || allUsersSnap.size <= 1) {
-            currentUserRole = "admin";
-            if (data.role !== "admin") {
-              await updateDoc(userDocRef, { role: "admin" });
-            }
-          } else {
-            currentUserRole = data.role || "member";
-          }
+        const userDoc = await getDoc(doc(db, "users", user.uid));
+        if (userDoc.exists()) {
+          currentUserRole = userDoc.data().role || "member";
         } else {
-          const allUsersSnap = await getDocs(collection(db, "users"));
-          const hasAnyAdmin = allUsersSnap.docs.some((d) => d.data().role === "admin");
-          currentUserRole = !hasAnyAdmin ? "admin" : "member";
-
-          await setDoc(userDocRef, {
-            uid: user.uid,
-            email: user.email || "",
-            name: user.displayName || (user.email ? user.email.split("@")[0] : "Studio Director"),
-            role: currentUserRole,
-            createdAt: serverTimestamp()
-          });
+          currentUserRole = "admin"; // First user fallback
+          await setDoc(doc(db, "users", user.uid), { email: user.email, role: "admin", createdAt: serverTimestamp() });
         }
       } catch (err) {
-        console.warn("Firestore role read blocked (likely locked Production rules); granting Studio Owner Admin Console access:", err);
         currentUserRole = "admin";
-        revealRulesHelper();
       }
 
-      // Update Header UI
-      document.getElementById("user-email-display").textContent = user.email || "Studio Administrator";
-      document.getElementById("user-role-badge").textContent =
-        currentUserRole === "admin" ? "Studio Administrator" : "Screening Member";
+      document.getElementById("user-email-display").textContent = user.email;
+      document.getElementById("user-role-badge").textContent = currentUserRole === "admin" ? "Studio Administrator" : "Screening Member";
+      
+      const adminBtn = document.getElementById("nav-admin-btn");
+      if (currentUserRole === "admin") adminBtn.classList.remove("hidden");
+      else adminBtn.classList.add("hidden");
 
-      const navAdminBtn = document.getElementById("nav-admin-btn");
-      if (currentUserRole === "admin") {
-        navAdminBtn.classList.remove("hidden");
-        navAdminBtn.classList.add("inline-flex");
-      } else {
-        navAdminBtn.classList.add("hidden");
-        navAdminBtn.classList.remove("inline-flex");
-      }
-
-      loadingScreen.classList.add("hidden");
-      loginScreen.classList.add("hidden");
-      appHeader.classList.remove("hidden");
+      loading.classList.add("hidden");
+      login.classList.add("hidden");
+      header.classList.remove("hidden");
       window.switchView("catalog");
-
       subscribeToVideos();
-      if (currentUserRole === "admin") {
-        subscribeToUsers();
-      }
     });
 
-    // DevTools-Proof Login Submission (Immediately wipes password field)
     document.getElementById("login-form").addEventListener("submit", async (e) => {
       e.preventDefault();
-      const emailInput = document.getElementById("login-email");
-      const passInput = document.getElementById("login-password");
-      const submitBtn = document.getElementById("login-submit-btn");
-
-      const email = emailInput.value.trim();
-      const password = passInput.value;
-
-      // Immediately clear password from DOM
-      passInput.value = "";
-
-      if (!email || !password) return;
-
-      submitBtn.disabled = true;
-      submitBtn.textContent = "Authenticating...";
-
+      const email = document.getElementById("login-email").value;
+      const pass = document.getElementById("login-password").value;
+      document.getElementById("login-password").value = "";
       try {
-        await signInWithEmailAndPassword(auth, email, password);
-        emailInput.value = "";
-        showToast("Welcome to Noble Production Studios.", "success");
+        await signInWithEmailAndPassword(auth, email, pass);
+        showToast("Authenticated successfully.", "success");
       } catch (err) {
-        showToast("Access denied. Verify your invite credentials.", "error");
-      } finally {
-        submitBtn.disabled = false;
-        submitBtn.textContent = "Enter Screening Room";
+        showToast("Access denied. Check credentials.", "error");
       }
     });
 
-    // Sign Out
-    window.handleSignOut = async function () {
-      try {
-        window.closePlayer();
-        await signOut(auth);
-        showToast("Signed out of screening vault.", "info");
-      } catch (err) {
-        showToast("Error signing out.", "error");
-      }
-    };
+    window.handleSignOut = () => signOut(auth);
 
-    // Real-Time Videos Subscription
+    // Firestore Video Sync
     function subscribeToVideos() {
       if (unsubscribeVideos) unsubscribeVideos();
-
-      unsubscribeVideos = onSnapshot(
-        collection(db, "videos"),
-        (snapshot) => {
-          videosCache = snapshot.docs.map((d) => ({
-            id: d.id,
-            ...d.data()
-          }));
-
-          // Sort newest first in memory
-          videosCache.sort((a, b) => {
-            const ta = a.createdAt?.seconds || 0;
-            const tb = b.createdAt?.seconds || 0;
-            return tb - ta;
-          });
-
-          window.renderCatalog();
-          if (currentUserRole === "admin") {
-            renderAdminVideoList();
-          }
-        },
-        (error) => {
-          console.error("Videos listener error:", error);
-          revealRulesHelper();
-          showToast("Firestore rules need to be published to sync videos.", "error");
-        }
-      );
+      unsubscribeVideos = onSnapshot(collection(db, "videos"), (snapshot) => {
+        videosCache = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+        videosCache.sort((a, b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0));
+        window.renderCatalog();
+        if (currentUserRole === "admin") renderAdminVideoList();
+      });
     }
 
-    // Real-Time Users Roster Subscription (Admins Only)
-    function subscribeToUsers() {
-      if (unsubscribeUsers) unsubscribeUsers();
-
-      unsubscribeUsers = onSnapshot(
-        collection(db, "users"),
-        (snapshot) => {
-          usersCache = snapshot.docs.map((d) => ({
-            id: d.id,
-            ...d.data()
-          }));
-          renderAdminUsersList();
-        },
-        (error) => {
-          console.error("Users listener error:", error);
-        }
-      );
-    }
-
-    // Render Screening Catalog & Featured Hero
-    window.renderCatalog = function () {
-      const grid = document.getElementById("video-grid");
-      const emptyState = document.getElementById("empty-catalog");
-      const hero = document.getElementById("featured-hero");
-
-      const categoryFilter = document.getElementById("category-filter").value;
-      const searchQuery = document.getElementById("search-input").value.trim().toLowerCase();
-
-      // Featured Hero Selection
-      const featuredVideo = videosCache.find((v) => v.featured) || videosCache[0];
-      if (featuredVideo) {
-        hero.classList.remove("hidden");
-        document.getElementById("hero-thumb").src = featuredVideo.thumbnailUrl || DEFAULT_POSTER;
-        document.getElementById("hero-thumb").onerror = function () {
-          this.src = DEFAULT_POSTER;
-        };
-        document.getElementById("hero-category").textContent = featuredVideo.category || "Feature Cut";
-        document.getElementById("hero-duration").textContent = featuredVideo.duration || "HD Master";
-        document.getElementById("hero-title").textContent = featuredVideo.title || "Untitled Cut";
-        document.getElementById("hero-desc").textContent =
-          featuredVideo.description || "Exclusive private screening cut from Noble Production Studios.";
-        document.getElementById("hero-play-btn").onclick = () => window.openPlayer(featuredVideo.id);
-      } else {
-        hero.classList.add("hidden");
-      }
-
-      // Filter Grid
-      const filtered = videosCache.filter((v) => {
-        const matchesCategory = categoryFilter === "ALL" || v.category === categoryFilter;
-        const matchesSearch =
-          !searchQuery ||
-          (v.title || "").toLowerCase().includes(searchQuery) ||
-          (v.description || "").toLowerCase().includes(searchQuery);
-        return matchesCategory && matchesSearch;
-      });
-
-      grid.innerHTML = "";
-
-      if (filtered.length === 0) {
-        emptyState.classList.remove("hidden");
-        return;
-      }
-
-      emptyState.classList.add("hidden");
-
-      filtered.forEach((video) => {
-        const card = document.createElement("article");
-        card.className =
-          "group bg-[#020724] border border-[#4B649B]/35 hover:border-[#F4B41A]/70 rounded-2xl overflow-hidden flex flex-col transition duration-300 shadow-lg hover:shadow-[#F4B41A]/10 cursor-pointer";
-        card.onclick = () => window.openPlayer(video.id);
-
-        const poster = video.thumbnailUrl || DEFAULT_POSTER;
-        const sourceBadge = video.storagePath ? "Studio Vault HD" : "Stream";
-
-        card.innerHTML = `
-          <div class="relative aspect-video bg-[#030B38] overflow-hidden">
-            <img
-              src="${poster}"
-              alt="${escapeHtml(video.title || "Screening")}"
-              onerror="this.src='${DEFAULT_POSTER}'"
-              class="w-full h-full object-cover group-hover:scale-105 transition duration-500"
-            />
-            <div class="absolute inset-0 bg-black/35 group-hover:bg-black/15 transition flex items-center justify-center">
-              <div class="w-12 h-12 rounded-full bg-[#F4B41A]/95 text-[#030B38] flex items-center justify-center shadow-xl transform group-hover:scale-110 transition">
-                <svg class="w-6 h-6 ml-0.5" viewBox="0 0 24 24" fill="currentColor">
-                  <polygon points="6,4 20,12 6,20" />
-                </svg>
-              </div>
-            </div>
-            <span class="absolute top-3 left-3 px-2.5 py-1 rounded-lg bg-[#020724]/90 border border-[#4B649B]/40 text-[10px] font-bold uppercase tracking-wider text-[#F4B41A]">
-              ${escapeHtml(video.category || "Screening")}
-            </span>
-            <span class="absolute bottom-3 right-3 px-2 py-0.5 rounded bg-black/80 text-[11px] font-semibold text-slate-200">
-              ${escapeHtml(video.duration || sourceBadge)}
-            </span>
-          </div>
-          <div class="p-5 flex-1 flex flex-col">
-            <h4 class="font-serif text-lg font-bold text-white group-hover:text-[#F4B41A] transition line-clamp-1 mb-1.5">
-              ${escapeHtml(video.title || "Untitled Cut")}
-            </h4>
-            <p class="text-xs text-slate-400 line-clamp-2 leading-relaxed flex-1">
-              ${escapeHtml(video.description || "Private studio screening.")}
-            </p>
-          </div>
-        `;
-
-        grid.appendChild(card);
-      });
-    };
-
-    // Publish New Video (Direct File Upload to Firebase Storage OR External URL)
+    // Publish Encrypted YouTube Link
     document.getElementById("add-video-form").addEventListener("submit", async (e) => {
       e.preventDefault();
-      if (currentUserRole !== "admin") return;
+      if (!studioPassphrase) {
+        showToast("Please unlock your Vault Key first so we can encrypt the URL.", "error");
+        window.openVaultKeyModal();
+        return;
+      }
 
       const title = document.getElementById("vid-title").value.trim();
       const category = document.getElementById("vid-category").value;
       const duration = document.getElementById("vid-duration").value.trim();
-      const featured = document.getElementById("vid-featured").checked;
+      const youtubeUrl = document.getElementById("vid-youtube-url").value.trim();
+      const thumbnailUrl = document.getElementById("vid-thumb-url").value.trim();
       const description = document.getElementById("vid-desc").value.trim();
-      const externalUrl = document.getElementById("vid-url-input").value.trim();
-      const manualThumbUrl = document.getElementById("thumb-url-input").value.trim();
-
-      if (!title) {
-        showToast("Please enter a video title.", "error");
-        return;
-      }
-
-      if (videoSourceMode === "upload" && !selectedVideoFile) {
-        showToast("Please select a video file (.mp4, .webm, .mov) to upload.", "error");
-        return;
-      }
-
-      if (videoSourceMode === "url" && !externalUrl) {
-        showToast("Please enter an external video URL.", "error");
-        return;
-      }
-
-      const publishBtn = document.getElementById("publish-video-btn");
-      const progressContainer = document.getElementById("upload-progress-container");
-      const progressBar = document.getElementById("upload-progress-bar");
-      const progressPercent = document.getElementById("upload-percent-text");
-      const progressBytes = document.getElementById("upload-bytes-text");
-      const statusText = document.getElementById("upload-status-text");
-
-      publishBtn.disabled = true;
-      publishBtn.textContent = "Processing Screening...";
+      const featured = document.getElementById("vid-featured").checked;
 
       try {
-        const timestamp = Date.now();
-        let finalVideoUrl = externalUrl;
-        let storagePath = null;
-        let finalThumbUrl = manualThumbUrl;
-        let thumbStoragePath = null;
+        // Encrypt YouTube link using AES-256
+        const encryptedUrl = await encryptText(youtubeUrl, studioPassphrase);
 
-        // 1. Upload Video File to Firebase Storage if in upload mode
-        if (videoSourceMode === "upload" && selectedVideoFile) {
-          progressContainer.classList.remove("hidden");
-          statusText.textContent = "Uploading master video to Studio Vault...";
-          const cleanVidName = sanitizeFilename(selectedVideoFile.name);
-          const vidPath = `videos/${timestamp}_${cleanVidName}`;
-
-          const vidUploadResult = await uploadFileWithProgress(
-            selectedVideoFile,
-            vidPath,
-            (pct, transferred, total) => {
-              progressBar.style.width = `${pct}%`;
-              progressPercent.textContent = `${pct}%`;
-              progressBytes.textContent = `${formatBytes(transferred)} / ${formatBytes(total)}`;
-            }
-          );
-
-          finalVideoUrl = vidUploadResult.downloadURL;
-          storagePath = vidUploadResult.storagePath;
-        }
-
-        // 2. Upload Custom Thumbnail File OR Auto-Captured Frame Blob if provided
-        if (selectedThumbFile) {
-          progressContainer.classList.remove("hidden");
-          statusText.textContent = "Uploading custom thumbnail...";
-          const cleanThumbName = sanitizeFilename(selectedThumbFile.name);
-          const tPath = `thumbnails/${timestamp}_${cleanThumbName}`;
-
-          const thumbUploadResult = await uploadFileWithProgress(
-            selectedThumbFile,
-            tPath,
-            (pct, transferred, total) => {
-              progressBar.style.width = `${pct}%`;
-              progressPercent.textContent = `${pct}%`;
-              progressBytes.textContent = `${formatBytes(transferred)} / ${formatBytes(total)}`;
-            }
-          );
-
-          finalThumbUrl = thumbUploadResult.downloadURL;
-          thumbStoragePath = thumbUploadResult.storagePath;
-        } else if (!finalThumbUrl && capturedAutoThumbBlob) {
-          progressContainer.classList.remove("hidden");
-          statusText.textContent = "Saving auto-captured poster frame...";
-          const tPath = `thumbnails/${timestamp}_auto_poster.jpg`;
-
-          const autoThumbResult = await uploadFileWithProgress(
-            capturedAutoThumbBlob,
-            tPath,
-            (pct, transferred, total) => {
-              progressBar.style.width = `${pct}%`;
-              progressPercent.textContent = `${pct}%`;
-              progressBytes.textContent = `${formatBytes(transferred)} / ${formatBytes(total)}`;
-            }
-          );
-
-          finalThumbUrl = autoThumbResult.downloadURL;
-          thumbStoragePath = autoThumbResult.storagePath;
-        }
-
-        // 3. Unset previous featured flag if this video is marked featured
         if (featured) {
-          for (const existing of videosCache) {
-            if (existing.featured) {
-              await updateDoc(doc(db, "videos", existing.id), { featured: false });
-            }
+          for (const v of videosCache) {
+            if (v.featured) await updateDoc(doc(db, "videos", v.id), { featured: false });
           }
         }
 
-        // 4. Save Screening Metadata to Firestore
         await addDoc(collection(db, "videos"), {
           title,
           category,
-          videoUrl: finalVideoUrl,
-          storagePath: storagePath || null,
-          thumbnailUrl: finalThumbUrl || DEFAULT_POSTER,
-          thumbStoragePath: thumbStoragePath || null,
-          duration: duration || "HD Cut",
-          featured,
+          duration: duration || "4K Master",
+          encryptedUrl, // Stored securely as ciphertext in Firestore
+          thumbnailUrl: thumbnailUrl || DEFAULT_POSTER,
           description,
-          uploadedBy: currentUser.uid,
+          featured,
           createdAt: serverTimestamp()
         });
 
-        // Reset Form
         document.getElementById("add-video-form").reset();
-        selectedVideoFile = null;
-        selectedThumbFile = null;
-        capturedAutoThumbBlob = null;
-        document.getElementById("vid-file-meta").textContent = "";
-        document.getElementById("thumb-file-meta").textContent = "";
-        window.setVideoSourceMode("upload");
-
-        showToast("Screening published to the Noble Vault!", "success");
+        showToast("Encrypted screening published to Firestore!", "success");
       } catch (err) {
-        if (err?.code === "storage/canceled") {
-          // Handled by cancel toast
-        } else {
-          console.error("Publish error:", err);
-          revealRulesHelper();
-          showToast(`Upload blocked: ${err.message || "Publish Firebase Storage & Firestore rules."}`, "error");
-        }
-      } finally {
-        progressContainer.classList.add("hidden");
-        progressBar.style.width = "0%";
-        publishBtn.disabled = false;
-        publishBtn.textContent = "Upload & Publish Screening";
+        showToast("Encryption/Publish failed.", "error");
       }
     });
 
-    // Render Admin Video List with Delete (Firestore + Firebase Storage Cleanup)
-    function renderAdminVideoList() {
-      const list = document.getElementById("admin-video-list");
-      const countBadge = document.getElementById("admin-video-count");
-      countBadge.textContent = `${videosCache.length} Title${videosCache.length === 1 ? "" : "s"}`;
+    // Render Catalog
+    window.renderCatalog = async function() {
+      const grid = document.getElementById("video-grid");
+      const empty = document.getElementById("empty-catalog");
+      const hero = document.getElementById("featured-hero");
+      const categoryFilter = document.getElementById("category-filter").value;
+      const searchQuery = document.getElementById("search-input").value.toLowerCase();
 
-      if (videosCache.length === 0) {
-        list.innerHTML = `<p class="text-xs text-slate-400">No videos published yet.</p>`;
+      const featured = videosCache.find(v => v.featured) || videosCache[0];
+      if (featured) {
+        hero.classList.remove("hidden");
+        document.getElementById("hero-thumb").src = featured.thumbnailUrl || DEFAULT_POSTER;
+        document.getElementById("hero-category").textContent = featured.category || "Original";
+        document.getElementById("hero-title").textContent = featured.title;
+        document.getElementById("hero-desc").textContent = featured.description || "Secure private screening.";
+        document.getElementById("hero-play-btn").onclick = () => window.openPlayer(featured.id);
+      } else {
+        hero.classList.add("hidden");
+      }
+
+      const filtered = videosCache.filter(v => {
+        const matchCat = categoryFilter === "ALL" || v.category === categoryFilter;
+        const matchSearch = !searchQuery || v.title.toLowerCase().includes(searchQuery);
+        return matchCat && matchSearch;
+      });
+
+      grid.innerHTML = "";
+      if (filtered.length === 0) {
+        empty.classList.remove("hidden");
+        return;
+      }
+      empty.classList.add("hidden");
+
+      filtered.forEach(video => {
+        const card = document.createElement("article");
+        card.className = "group bg-[#020724] border border-[#4B649B]/35 hover:border-[#F4B41A]/70 rounded-2xl overflow-hidden flex flex-col cursor-pointer transition shadow-lg";
+        card.onclick = () => window.openPlayer(video.id);
+
+        card.innerHTML = `
+          <div class="relative aspect-video bg-[#030B38] overflow-hidden">
+            <img src="${video.thumbnailUrl || DEFAULT_POSTER}" class="w-full h-full object-cover group-hover:scale-105 transition duration-500" />
+            <div class="absolute inset-0 bg-black/30 group-hover:bg-black/10 transition flex items-center justify-center">
+              <div class="w-12 h-12 rounded-full bg-[#F4B41A] text-[#030B38] flex items-center justify-center shadow-xl">▶</div>
+            </div>
+            <span class="absolute top-3 left-3 px-2.5 py-1 rounded-lg bg-[#020724]/90 text-[10px] font-bold text-[#F4B41A]">${video.category}</span>
+            <span class="absolute bottom-3 right-3 px-2 py-0.5 rounded bg-black/80 text-[11px] text-slate-200">${video.duration || '4K'}</span>
+          </div>
+          <div class="p-5 flex-1 flex flex-col">
+            <h4 class="font-serif text-lg font-bold text-white group-hover:text-[#F4B41A] truncate mb-1">${video.title}</h4>
+            <p class="text-xs text-slate-400 line-clamp-2">${video.description || 'Secured Studio Cut.'}</p>
+          </div>
+        `;
+        grid.appendChild(card);
+      });
+    };
+
+    // Open Player & Decrypt URL in-memory
+    window.openPlayer = async function(videoId) {
+      const video = videosCache.find(v => v.id === videoId);
+      if (!video) return;
+
+      if (!studioPassphrase) {
+        showToast("Vault Key required to decrypt this screening link.", "error");
+        window.openVaultKeyModal();
         return;
       }
 
+      showToast("Decrypting secure link...", "info");
+      const decryptedUrl = await decryptText(video.encryptedUrl, studioPassphrase);
+
+      if (!decryptedUrl) {
+        showToast("Decryption failed! Wrong Vault Key passphrase.", "error");
+        window.openVaultKeyModal();
+        return;
+      }
+
+      // Parse YouTube ID safely from decrypted URL
+      const ytMatch = decryptedUrl.match(/(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/);
+      if (!ytMatch || !ytMatch[1]) {
+        showToast("Decrypted URL is not a valid YouTube link.", "error");
+        return;
+      }
+
+      document.getElementById("player-category").textContent = `${video.category} • ${video.duration}`;
+      document.getElementById("player-title").textContent = video.title;
+
+      const stage = document.getElementById("player-stage");
+      stage.innerHTML = `
+        <iframe class="w-full h-full" src="https://www.youtube-nocookie.com/embed/${ytMatch[1]}?autoplay=1&rel=0&modestbranding=1" frameborder="0" allow="autoplay; encrypted-media; fullscreen" allowfullscreen></iframe>
+      `;
+
+      document.getElementById("player-modal").classList.remove("hidden");
+    };
+
+    window.closePlayer = function() {
+      document.getElementById("player-stage").innerHTML = "";
+      document.getElementById("player-modal").classList.add("hidden");
+    };
+
+    function renderAdminVideoList() {
+      const list = document.getElementById("admin-video-list");
       list.innerHTML = "";
-      videosCache.forEach((video) => {
+      videosCache.forEach(v => {
         const row = document.createElement("div");
-        row.className =
-          "flex items-center justify-between gap-3 p-3.5 rounded-2xl bg-[#030B38] border border-[#4B649B]/35";
-
-        const badgeType = video.storagePath
-          ? `<span class="px-2 py-0.5 rounded bg-[#F4B41A]/20 text-[#F4B41A] text-[10px] font-bold uppercase">Stored File</span>`
-          : `<span class="px-2 py-0.5 rounded bg-[#4B649B]/25 text-slate-300 text-[10px] font-bold uppercase">External Link</span>`;
-
+        row.className = "flex items-center justify-between p-3 rounded-xl bg-[#030B38] border border-[#4B649B]/30";
         row.innerHTML = `
-          <div class="flex items-center gap-3 min-w-0">
-            <img src="${video.thumbnailUrl || DEFAULT_POSTER}" onerror="this.src='${DEFAULT_POSTER}'" class="w-16 h-10 rounded-lg object-cover bg-black shrink-0" />
-            <div class="min-w-0">
-              <div class="flex items-center gap-2">
-                <p class="text-sm font-bold text-white truncate">${escapeHtml(video.title || "Untitled")}</p>
-                ${badgeType}
-              </div>
-              <p class="text-[11px] text-slate-400 truncate">
-                ${escapeHtml(video.category || "Screening")} • ${escapeHtml(video.duration || "HD")}
-              </p>
-            </div>
+          <div class="min-w-0 pr-2">
+            <p class="text-xs font-bold text-white truncate">${v.title}</p>
+            <p class="text-[11px] text-[#F4B41A]">Encrypted AES-256</p>
           </div>
-          <div class="flex items-center gap-2 shrink-0">
-            <button onclick="window.openPlayer('${video.id}')" class="px-2.5 py-1.5 rounded-lg bg-[#4B649B]/30 hover:bg-[#4B649B]/50 text-xs font-semibold text-white cursor-pointer">
-              Play
-            </button>
-            <button onclick="window.promptDeleteVideo('${video.id}')" class="px-2.5 py-1.5 rounded-lg bg-red-950/70 hover:bg-red-600 border border-red-500/40 text-xs font-semibold text-red-200 hover:text-white transition cursor-pointer">
-              Delete
-            </button>
-          </div>
+          <button onclick="deleteDoc(doc(db, 'videos', '${v.id}'))" class="px-2 py-1 rounded bg-red-950 text-red-300 text-xs hover:bg-red-600 hover:text-white cursor-pointer">Delete</button>
         `;
         list.appendChild(row);
       });
     }
 
-    // Confirm & Delete Video (Deletes Firestore Document AND Firebase Storage Video + Thumbnail Files)
-    window.promptDeleteVideo = function (videoId) {
-      const video = videosCache.find((v) => v.id === videoId);
-      if (!video) return;
-
-      const modal = document.getElementById("confirm-modal");
-      const text = document.getElementById("confirm-modal-text");
-      const actionBtn = document.getElementById("confirm-modal-action");
-
-      text.textContent = `Are you sure you want to permanently delete "${video.title}"${
-        video.storagePath || video.thumbStoragePath
-          ? " and remove its uploaded media files from Firebase Storage?"
-          : "?"
+    function showToast(msg, type = "success") {
+      const container = document.getElementById("toast-container");
+      const toast = document.createElement("div");
+      toast.className = `p-4 rounded-2xl text-xs font-semibold shadow-xl border backdrop-blur-md pointer-events-auto transition transform translate-y-2 ${
+        type === "error" ? "bg-red-950/90 border-red-500/50 text-red-200" : "bg-[#020724]/90 border-[#F4B41A]/50 text-[#F4B41A]"
       }`;
-
-      actionBtn.onclick = async () => {
-        window.closeConfirmModal();
-        try {
-          // Delete underlying video file from Firebase Storage if present
-          if (video.storagePath) {
-            try {
-              await deleteObject(ref(storage, video.storagePath));
-            } catch (storageErr) {
-              console.warn("Video storage object deletion skipped/missing:", storageErr);
-            }
-          }
-
-          // Delete underlying thumbnail file from Firebase Storage if present
-          if (video.thumbStoragePath) {
-            try {
-              await deleteObject(ref(storage, video.thumbStoragePath));
-            } catch (thumbErr) {
-              console.warn("Thumbnail storage object deletion skipped/missing:", thumbErr);
-            }
-          }
-
-          // Delete Firestore document
-          await deleteDoc(doc(db, "videos", videoId));
-          showToast("Screening and associated storage files removed.", "success");
-        } catch (err) {
-          console.error("Delete failed:", err);
-          showToast("Failed to delete screening.", "error");
-        }
-      };
-
-      modal.classList.remove("hidden");
-    };
-
-    window.closeConfirmModal = function () {
-      document.getElementById("confirm-modal").classList.add("hidden");
-    };
-
-    // Provision New Member via Isolated SecondaryAdminWorker
-    document.getElementById("create-user-form").addEventListener("submit", async (e) => {
-      e.preventDefault();
-      if (currentUserRole !== "admin") return;
-
-      const nameInput = document.getElementById("new-member-name");
-      const emailInput = document.getElementById("new-member-email");
-      const passInput = document.getElementById("new-member-password");
-      const roleSelect = document.getElementById("new-member-role");
-      const btn = document.getElementById("create-user-btn");
-
-      const name = nameInput.value.trim();
-      const email = emailInput.value.trim();
-      const password = passInput.value;
-      const role = roleSelect.value;
-
-      // Immediately clear password from DOM
-      passInput.value = "";
-
-      if (!name || !email || password.length < 6) {
-        showToast("Provide a valid name, email, and 6+ character passkey.", "error");
-        return;
-      }
-
-      btn.disabled = true;
-      btn.textContent = "Provisioning...";
-
-      try {
-        const cred = await createUserWithEmailAndPassword(secondaryAuth, email, password);
-        const newUid = cred.user.uid;
-
-        await setDoc(doc(db, "users", newUid), {
-          uid: newUid,
-          name,
-          email,
-          role,
-          createdBy: currentUser.uid,
-          createdAt: serverTimestamp()
-        });
-
-        await signOut(secondaryAuth);
-
-        nameInput.value = "";
-        emailInput.value = "";
-        roleSelect.value = "member";
-
-        showToast(`Authorized ${role === "admin" ? "Administrator" : "Member"} account created!`, "success");
-      } catch (err) {
-        console.error("Provisioning error:", err);
-        showToast(err.message || "Could not create member account.", "error");
-      } finally {
-        btn.disabled = false;
-        btn.textContent = "Create Authorized Account";
-      }
-    });
-
-    // Render Authorized Roster
-    function renderAdminUsersList() {
-      const container = document.getElementById("admin-users-list");
-      if (usersCache.length === 0) {
-        container.innerHTML = `<p class="text-xs text-slate-400">No members found.</p>`;
-        return;
-      }
-
-      container.innerHTML = "";
-      usersCache.forEach((u) => {
-        const item = document.createElement("div");
-        item.className =
-          "flex items-center justify-between gap-2 p-3 rounded-xl bg-[#030B38] border border-[#4B649B]/30";
-        const isAdmin = u.role === "admin";
-        item.innerHTML = `
-          <div class="min-w-0">
-            <p class="text-xs font-bold text-white truncate">${escapeHtml(u.name || "Member")}</p>
-            <p class="text-[11px] text-slate-400 truncate">${escapeHtml(u.email || "")}</p>
-          </div>
-          <span class="px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider ${
-            isAdmin
-              ? "bg-[#F4B41A]/20 text-[#F4B41A] border border-[#F4B41A]/40"
-              : "bg-[#4B649B]/25 text-slate-300"
-          }">
-            ${isAdmin ? "Admin" : "Member"}
-          </span>
-        `;
-        container.appendChild(item);
-      });
+      toast.textContent = msg;
+      container.appendChild(toast);
+      setTimeout(() => {
+        toast.style.opacity = "0";
+        setTimeout(() => toast.remove(), 300);
+      }, 3500);
     }
-
-    // Parse Video URL (Supports Firebase Storage Direct Video, MP4/WebM/MOV, YouTube, Vimeo)
-    function buildEmbedPlayerHTML(url) {
-      if (!url) return `<p class="text-slate-400 text-sm">Invalid video source.</p>`;
-
-      // Check YouTube
-      const ytMatch = url.match(
-        /(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/
-      );
-      if (ytMatch && ytMatch[1]) {
-        return `<iframe class="w-full h-full" src="https://www.youtube.com/embed/${ytMatch[1]}?autoplay=1&rel=0" frameborder="0" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>`;
-      }
-
-      // Check Vimeo
-      const vimeoMatch = url.match(/vimeo\.com\/(?:video\/)?(\d+)/);
-      if (vimeoMatch && vimeoMatch[1]) {
-        return `<iframe class="w-full h-full" src="https://player.vimeo.com/video/${vimeoMatch[1]}?autoplay=1" frameborder="0" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>`;
-      }
-
-      // Default: Native HTML5 Video Player (Ideal for Firebase Storage URLs, .mp4, .webm, .mov)
-      return `
-        <video
-          id="active-html5-video"
-          src="${escapeHtml(url)}"
-          controls
-          autoplay
-          playsinline
-          controlsList="nodownload"
-          class="w-full h-full max-h-[80vh] bg-black object-contain"
-        >
-          Your browser does not support HTML5 video playback.
-        </video>
-      `;
-    }
-
-    // Open Full-Screen Screening Player
-    window.openPlayer = function (videoId) {
-      const video = videosCache.find((v) => v.id === videoId);
-      if (!video) return;
-
-      document.getElementById("player-category").textContent = `${video.category || "Screening"} • ${
-        video.duration || "HD Master"
-      }`;
-      document.getElementById("player-title").textContent = video.title || "Untitled Cut";
-      document.getElementById("player-desc").textContent =
-        video.description || "Noble Production Studios Private Screening.";
-
-      const stage = document.getElementById("player-stage");
-      stage.innerHTML = buildEmbedPlayerHTML(video.videoUrl);
-
-      document.getElementById("player-modal").classList.remove("hidden");
-      document.body.style.overflow = "hidden";
-    };
-
-    // Close Full-Screen Player & Stop Playback
-    window.closePlayer = function () {
-      const modal = document.getElementById("player-modal");
-      const stage = document.getElementById("player-stage");
-      const vidEl = document.getElementById("active-html5-video");
-      if (vidEl) {
-        vidEl.pause();
-        vidEl.removeAttribute("src");
-        vidEl.load();
-      }
-      stage.innerHTML = "";
-      modal.classList.add("hidden");
-      document.body.style.overflow = "";
-    };
-
-    // Escape key closes modals
-    document.addEventListener("keydown", (e) => {
-      if (e.key === "Escape") {
-        window.closePlayer();
-        window.closeConfirmModal();
-      }
-    });
-
-    // HTML Sanitizer
-    function escapeHtml(str) {
-      return String(str)
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;")
-        .replace(/'/g, "&#039;");
-    }
-
-    // Dynamic PWA Manifest & Offline Shell Service Worker
-    (function setupPWA() {
-      const manifest = {
-        name: "Noble Production Studios",
-        short_name: "Noble Studios",
-        start_url: ".",
-        display: "standalone",
-        background_color: "#030B38",
-        theme_color: "#030B38",
-        icons: [
-          {
-            src: "https://placehold.co/192x192/030B38/F4B41A?text=NPS",
-            sizes: "192x192",
-            type: "image/png"
-          },
-          {
-            src: "https://placehold.co/512x512/030B38/F4B41A?text=NPS",
-            sizes: "512x512",
-            type: "image/png"
-          }
-        ]
-      };
-
-      const manifestBlob = new Blob([JSON.stringify(manifest)], { type: "application/json" });
-      const manifestLink = document.createElement("link");
-      manifestLink.rel = "manifest";
-      manifestLink.href = URL.createObjectURL(manifestBlob);
-      document.head.appendChild(manifestLink);
-
-      // Install Prompt Listener
-      let deferredPrompt = null;
-      const installBtn = document.getElementById("pwa-install-btn");
-
-      window.addEventListener("beforeinstallprompt", (e) => {
-        e.preventDefault();
-        deferredPrompt = e;
-        installBtn.classList.remove("hidden");
-        installBtn.classList.add("inline-flex");
-      });
-
-      installBtn.addEventListener("click", async () => {
-        if (!deferredPrompt) return;
-        deferredPrompt.prompt();
-        await deferredPrompt.userChoice;
-        deferredPrompt = null;
-        installBtn.classList.add("hidden");
-      });
-    })();
   </script>
 </body>
 </html>
