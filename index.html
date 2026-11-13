@@ -1,0 +1,2508 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="theme-color" content="#030B38" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Noble Studios" />
+  <title>Noble Production Studios — Private Screening Room</title>
+
+  <!-- Google Fonts: Cinzel, Playfair Display & Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800;900&family=Inter:wght@400;500;600;700;800&family=Playfair+Display:wght@700;800;900&display=swap" rel="stylesheet" />
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            serif: ['Cinzel', 'Playfair Display', 'Georgia', 'serif'],
+          },
+          colors: {
+            noble: {
+              bg: '#030B38',
+              card: '#020724',
+              elevated: '#07134D',
+              slate: '#4B649B',
+              gold: '#F4B41A',
+              goldLight: '#FFD15C',
+              goldDark: '#C9900B',
+            }
+          }
+        }
+      }
+    };
+  </script>
+
+  <!-- Custom Styling for Scrollbars, Serif Logo Emboss & Smooth Animations -->
+  <style>
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+
+    .noble-logo-text {
+      font-family: 'Cinzel', 'Playfair Display', Georgia, serif;
+      color: #F4B41A;
+      text-shadow: 0 2px 12px rgba(244, 180, 26, 0.35), 0 1px 0 #8F6300;
+      letter-spacing: 0.06em;
+    }
+
+    @keyframes fadeSlideUp {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    .animate-fade-up {
+      animation: fadeSlideUp 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    .poster-card {
+      transition: transform 0.28s cubic-bezier(0.25, 0.8, 0.25, 1), box-shadow 0.28s ease, border-color 0.28s ease;
+    }
+    .poster-card:hover {
+      transform: translateY(-5px) scale(1.025);
+      box-shadow: 0 18px 36px -10px rgba(2, 7, 36, 0.9), 0 0 0 1px rgba(244, 180, 26, 0.55);
+    }
+  </style>
+
+  <!-- Dynamic Inline SVG Icon & Web App Manifest Injection for GitHub Pages PWA -->
+  <script>
+    (function setupPWAArtifacts() {
+      const svgMarkup = `
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+          <rect width="512" height="512" rx="112" fill="#030B38"/>
+          <rect x="24" y="24" width="464" height="464" rx="92" fill="none" stroke="#F4B41A" stroke-width="18"/>
+          <circle cx="256" cy="256" r="172" fill="#020724" stroke="#4B649B" stroke-width="8"/>
+          <path d="M168 356V156h38l100 132V156h38v200h-36L206 222v134h-38z" fill="#F4B41A"/>
+        </svg>
+      `.trim();
+
+      const encodedSvg = encodeURIComponent(svgMarkup);
+      const iconDataUrl = `data:image/svg+xml;utf8,${encodedSvg}`;
+
+      // Set favicon and Apple Touch Icon dynamically
+      const favicon = document.createElement('link');
+      favicon.rel = 'icon';
+      favicon.type = 'image/svg+xml';
+      favicon.href = iconDataUrl;
+      document.head.appendChild(favicon);
+
+      const appleIcon = document.createElement('link');
+      appleIcon.rel = 'apple-touch-icon';
+      appleIcon.href = iconDataUrl;
+      document.head.appendChild(appleIcon);
+
+      // Build and attach Web App Manifest Blob
+      const manifestData = {
+        name: 'Noble Production Studios',
+        short_name: 'Noble Studios',
+        description: 'Invite-only exclusive screening room and streaming vault for Noble Production Studios.',
+        start_url: './',
+        scope: './',
+        display: 'standalone',
+        orientation: 'any',
+        background_color: '#030B38',
+        theme_color: '#030B38',
+        icons: [
+          {
+            src: iconDataUrl,
+            sizes: '192x192 512x512',
+            type: 'image/svg+xml',
+            purpose: 'any maskable'
+          }
+        ]
+      };
+
+      const manifestBlob = new Blob([JSON.stringify(manifestData)], { type: 'application/manifest+json' });
+      const manifestLink = document.createElement('link');
+      manifestLink.rel = 'manifest';
+      manifestLink.href = URL.createObjectURL(manifestBlob);
+      document.head.appendChild(manifestLink);
+    })();
+  </script>
+</head>
+
+<body class="bg-[#030B38] text-white font-sans antialiased selection:bg-[#F4B41A] selection:text-[#030B38] min-h-screen overflow-x-hidden">
+
+  <!-- Global Toast Notification Stack (No alert/confirm used) -->
+  <div id="toast-stack" class="fixed bottom-5 right-5 z-[100] flex flex-col gap-2.5 max-w-sm w-full px-4 sm:px-0 pointer-events-none"></div>
+
+  <!-- ===================================================================== -->
+  <!-- 1. AUTHENTICATION VERIFICATION SPLASH SCREEN                          -->
+  <!-- ===================================================================== -->
+  <div id="auth-splash" class="fixed inset-0 z-50 bg-[#030B38] flex flex-col items-center justify-center p-6">
+    <div class="w-16 h-16 rounded-2xl bg-[#020724] border-2 border-[#F4B41A] flex items-center justify-center shadow-2xl shadow-[#F4B41A]/15 mb-5 animate-pulse">
+      <span class="font-serif font-black text-3xl text-[#F4B41A]">N</span>
+    </div>
+    <h2 class="noble-logo-text text-lg sm:text-xl font-extrabold uppercase tracking-widest text-center">
+      Noble Production Studios
+    </h2>
+    <p class="mt-2 text-xs font-semibold uppercase tracking-[0.22em] text-[#4B649B]">
+      Establishing Secure Vault Connection...
+    </p>
+  </div>
+
+  <!-- ===================================================================== -->
+  <!-- 2. INVITE-ONLY LOGIN SCREEN (ZERO SELF-REGISTRATION / DEVTOOLS SAFE)  -->
+  <!-- ===================================================================== -->
+  <main id="login-view" class="hidden min-h-screen flex flex-col justify-between p-4 sm:p-8 bg-[radial-gradient(ellipse_at_top,_#091866_0%,_#030B38_55%,_#020724_100%)]">
+    <!-- Top Connection Status Bar -->
+    <header class="max-w-6xl w-full mx-auto flex flex-wrap items-center justify-between gap-3 pt-1">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-[#020724] border-2 border-[#F4B41A] flex items-center justify-center shadow-md">
+          <span class="font-serif font-black text-xl text-[#F4B41A]">N</span>
+        </div>
+        <div>
+          <span class="noble-logo-text text-sm sm:text-base font-extrabold block leading-tight">
+            NOBLE PRODUCTION STUDIOS
+          </span>
+          <span class="text-[10px] font-bold uppercase tracking-[0.24em] text-[#4B649B]">
+            Private Screening Portal
+          </span>
+        </div>
+      </div>
+
+      <!-- Live Firebase Connection Pill -->
+      <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#020724]/90 border border-[#4B649B]/40 text-[11px] font-medium text-slate-300">
+        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+        <span>Connected: <strong class="text-[#F4B41A] font-semibold">noble-production-studios-99919</strong></span>
+      </div>
+    </header>
+
+    <!-- Center Login Card -->
+    <section class="w-full max-w-md mx-auto my-auto py-8 animate-fade-up">
+      <div class="bg-[#020724]/95 border border-[#4B649B]/45 rounded-3xl p-7 sm:p-10 shadow-2xl backdrop-blur-xl">
+        <div class="text-center mb-8">
+          <div class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[#F4B41A]/10 border border-[#F4B41A]/35 text-[#F4B41A] text-[11px] font-bold uppercase tracking-widest mb-4">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+            </svg>
+            <span>Invite-Only Access</span>
+          </div>
+
+          <h1 class="noble-logo-text text-2xl sm:text-3xl font-black tracking-wide leading-snug">
+            Noble Production Studios
+          </h1>
+          <p class="mt-2 text-xs sm:text-sm text-[#4B649B] font-medium">
+            Sign in with your authorized studio credentials to access private screenings.
+          </p>
+        </div>
+
+        <!-- Server Auth Error Alert -->
+        <div id="login-error-banner" class="hidden mb-5 p-3.5 rounded-xl bg-red-950/85 border border-red-500/50 text-red-200 text-xs sm:text-sm flex items-start gap-2.5">
+          <svg class="w-5 h-5 text-red-400 shrink-0 mt-0.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01M10.29 3.86l-8.4 14.54A1.5 1.5 0 003.18 20.5h17.64a1.5 1.5 0 001.29-2.1L13.71 3.86a1.5 1.5 0 00-2.42 0z"/>
+          </svg>
+          <span id="login-error-msg">Authentication failed.</span>
+        </div>
+
+        <!-- Login Form (Strictly No Self-Registration) -->
+        <form id="login-form" class="space-y-5" autocomplete="off">
+          <div>
+            <label for="login-email" class="block text-xs font-bold uppercase tracking-wider text-[#4B649B] mb-2">
+              Authorized Email
+            </label>
+            <input
+              id="login-email"
+              type="email"
+              required
+              autocomplete="username"
+              placeholder="member@nobleproductionstudios.com"
+              class="w-full px-4 py-3.5 rounded-xl bg-[#030B38] border border-[#4B649B]/55 text-white placeholder-[#4B649B]/60 focus:outline-none focus:border-[#F4B41A] focus:ring-2 focus:ring-[#F4B41A]/25 transition text-sm"
+            />
+          </div>
+
+          <div>
+            <label for="login-password" class="block text-xs font-bold uppercase tracking-wider text-[#4B649B] mb-2">
+              Studio Passcode
+            </label>
+            <div class="relative">
+              <input
+                id="login-password"
+                type="password"
+                required
+                autocomplete="current-password"
+                placeholder="••••••••••••"
+                class="w-full px-4 py-3.5 pr-11 rounded-xl bg-[#030B38] border border-[#4B649B]/55 text-white placeholder-[#4B649B]/60 focus:outline-none focus:border-[#F4B41A] focus:ring-2 focus:ring-[#F4B41A]/25 transition text-sm"
+              />
+              <button
+                type="button"
+                id="toggle-pass-btn"
+                class="absolute right-3 top-1/2 -translate-y-1/2 p-1.5 text-[#4B649B] hover:text-[#F4B41A] transition"
+                aria-label="Toggle passcode visibility"
+              >
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                </svg>
+              </button>
+            </div>
+          </div>
+
+          <button
+            id="login-submit-btn"
+            type="submit"
+            class="w-full py-3.5 px-6 rounded-xl bg-[#F4B41A] hover:bg-[#FFD15C] active:scale-[0.99] text-[#030B38] font-extrabold text-sm sm:text-base shadow-lg shadow-[#F4B41A]/20 transition flex items-center justify-center gap-2"
+          >
+            <span>Enter Screening Room</span>
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"/>
+            </svg>
+          </button>
+        </form>
+
+        <!-- Install PWA Button (Appears automatically when supported by browser) -->
+        <button
+          id="login-install-btn"
+          type="button"
+          class="hidden mt-4 w-full py-2.5 px-4 rounded-xl bg-[#030B38] hover:bg-[#07134D] border border-[#F4B41A]/50 text-[#F4B41A] text-xs font-bold transition flex items-center justify-center gap-2"
+        >
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5 5m0 0l5-5m-5 5V3"/>
+          </svg>
+          <span>Install Noble Production Studios App</span>
+        </button>
+
+        <!-- Security Notice Footer -->
+        <div class="mt-6 pt-5 border-t border-[#4B649B]/25 text-center space-y-1.5">
+          <p class="text-[11px] text-slate-300/80 leading-relaxed">
+            Self-registration is permanently disabled. Accounts are provisioned solely by an authorized <span class="text-[#F4B41A] font-semibold">Studio Administrator</span>.
+          </p>
+          <p class="text-[10px] text-[#4B649B] flex items-center justify-center gap-1.5">
+            <svg class="w-3.5 h-3.5 text-emerald-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
+            </svg>
+            <span>Server-verified cryptographic authentication • Zero client-side secrets</span>
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <footer class="text-center text-[11px] text-[#4B649B] pb-2">
+      &copy; 2026 Noble Production Studios. All Rights Reserved. Confidential Screening Portal.
+    </footer>
+  </main>
+
+  <!-- ===================================================================== -->
+  <!-- 3. AUTHENTICATED STREAMING PLATFORM SHELL                             -->
+  <!-- ===================================================================== -->
+  <div id="streaming-shell" class="hidden min-h-screen flex flex-col">
+
+    <!-- Sticky Navigation Header -->
+    <header id="top-navbar" class="sticky top-0 z-40 bg-[#030B38]/92 backdrop-blur-lg border-b border-[#4B649B]/30">
+      <div class="max-w-[1560px] mx-auto px-4 sm:px-8 h-16 sm:h-20 flex items-center justify-between gap-3">
+        
+        <!-- Left: Brand Logo & Category Tabs -->
+        <div class="flex items-center gap-6 lg:gap-10 min-w-0">
+          <button type="button" onclick="setActiveTab('All Releases')" class="flex items-center gap-3 group text-left shrink-0 focus:outline-none">
+            <div class="w-10 h-10 rounded-xl bg-[#020724] border-2 border-[#F4B41A] flex items-center justify-center shadow-lg shadow-[#F4B41A]/15 group-hover:scale-105 transition">
+              <span class="font-serif font-black text-xl text-[#F4B41A]">N</span>
+            </div>
+            <div class="hidden sm:block">
+              <span class="noble-logo-text text-sm lg:text-base font-extrabold block leading-none">
+                NOBLE PRODUCTION STUDIOS
+              </span>
+              <span class="text-[9px] font-bold uppercase tracking-[0.26em] text-[#4B649B] block mt-1">
+                Exclusive Screening Vault
+              </span>
+            </div>
+          </button>
+
+          <!-- Desktop Filter Tabs -->
+          <nav class="hidden xl:flex items-center gap-1.5 bg-[#020724] p-1.5 rounded-2xl border border-[#4B649B]/35">
+            <button data-tab="All Releases" onclick="setActiveTab('All Releases')" class="tab-pill px-4 py-1.5 rounded-xl text-xs font-extrabold bg-[#F4B41A] text-[#030B38] transition">
+              All Releases
+            </button>
+            <button data-tab="Feature Films" onclick="setActiveTab('Feature Films')" class="tab-pill px-4 py-1.5 rounded-xl text-xs font-semibold text-slate-300 hover:text-white transition">
+              Feature Films
+            </button>
+            <button data-tab="Original Series" onclick="setActiveTab('Original Series')" class="tab-pill px-4 py-1.5 rounded-xl text-xs font-semibold text-slate-300 hover:text-white transition">
+              Original Series
+            </button>
+            <button data-tab="My List" onclick="setActiveTab('My List')" class="tab-pill px-4 py-1.5 rounded-xl text-xs font-semibold text-slate-300 hover:text-white transition flex items-center gap-1.5">
+              <span>My List</span>
+              <span id="watchlist-count-badge" class="px-1.5 py-0.2 rounded-full text-[10px] font-extrabold bg-[#4B649B]/40 text-[#F4B41A]">0</span>
+            </button>
+          </nav>
+        </div>
+
+        <!-- Right: Search, Install App, Admin Panel & Sign Out -->
+        <div class="flex items-center gap-2 sm:gap-3">
+          <!-- Live Search Input -->
+          <div class="relative flex items-center">
+            <svg class="w-4 h-4 text-[#4B649B] absolute left-3.5 pointer-events-none" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-4.35-4.35M17 11A6 6 0 115 11a6 6 0 0112 0z"/>
+            </svg>
+            <input
+              id="search-box"
+              type="text"
+              placeholder="Search vault..."
+              oninput="handleSearchInput(this.value)"
+              class="w-32 sm:w-48 lg:w-60 focus:w-40 sm:focus:w-56 lg:focus:w-68 transition-all bg-[#020724] text-xs sm:text-sm text-white placeholder-[#4B649B] pl-9 pr-7 py-2 rounded-xl border border-[#4B649B]/45 focus:border-[#F4B41A] focus:outline-none"
+            />
+            <button
+              id="clear-search-btn"
+              type="button"
+              onclick="clearSearchInput()"
+              class="hidden absolute right-2 text-[#4B649B] hover:text-white p-1"
+              aria-label="Clear search"
+            >
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+              </svg>
+            </button>
+          </div>
+
+          <!-- Header PWA Install App Button (Shown when beforeinstallprompt fires) -->
+          <button
+            id="header-install-btn"
+            type="button"
+            class="hidden items-center gap-1.5 px-3 py-2 rounded-xl bg-[#020724] hover:bg-[#07134D] border border-[#F4B41A]/60 text-[#F4B41A] text-xs font-bold transition shrink-0"
+            title="Install Noble Production Studios App"
+          >
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5 5m0 0l5-5m-5 5V3"/>
+            </svg>
+            <span class="hidden md:inline">Install App</span>
+          </button>
+
+          <!-- Admin Panel Button (Visible ONLY to users with role === 'admin') -->
+          <button
+            id="admin-panel-trigger"
+            type="button"
+            onclick="openAdminModal()"
+            class="hidden items-center gap-1.5 px-3.5 py-2 rounded-xl bg-[#F4B41A]/15 hover:bg-[#F4B41A]/25 border border-[#F4B41A]/50 text-[#F4B41A] text-xs font-bold transition shrink-0"
+            title="Studio Admin Dashboard (Videos & Accounts)"
+          >
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
+              <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+            </svg>
+            <span class="hidden md:inline">Admin Panel</span>
+          </button>
+
+          <!-- User Profile Chip -->
+          <div id="user-profile-chip" class="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-xl bg-[#020724] border border-[#4B649B]/35">
+            <span id="user-role-dot" class="w-2 h-2 rounded-full bg-emerald-400"></span>
+            <span id="user-display-label" class="text-xs font-semibold text-slate-200 max-w-[120px] truncate">Member</span>
+          </div>
+
+          <!-- Sign Out Button -->
+          <button
+            type="button"
+            onclick="signOutUser()"
+            class="p-2 sm:px-3 sm:py-2 rounded-xl bg-red-950/60 hover:bg-red-900/75 border border-red-500/35 text-red-200 text-xs font-bold transition flex items-center gap-1.5 shrink-0"
+            title="Sign Out"
+          >
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
+            </svg>
+            <span class="hidden lg:inline">Sign Out</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Mobile/Tablet Horizontal Category Bar -->
+      <div class="xl:hidden flex items-center gap-2 px-4 sm:px-8 pb-3 overflow-x-auto no-scrollbar">
+        <button data-tab="All Releases" onclick="setActiveTab('All Releases')" class="tab-pill shrink-0 px-3.5 py-1.5 rounded-xl text-xs font-extrabold bg-[#F4B41A] text-[#030B38]">
+          All Releases
+        </button>
+        <button data-tab="Feature Films" onclick="setActiveTab('Feature Films')" class="tab-pill shrink-0 px-3.5 py-1.5 rounded-xl text-xs font-semibold bg-[#020724] text-slate-300 border border-[#4B649B]/30">
+          Feature Films
+        </button>
+        <button data-tab="Original Series" onclick="setActiveTab('Original Series')" class="tab-pill shrink-0 px-3.5 py-1.5 rounded-xl text-xs font-semibold bg-[#020724] text-slate-300 border border-[#4B649B]/30">
+          Original Series
+        </button>
+        <button data-tab="My List" onclick="setActiveTab('My List')" class="tab-pill shrink-0 px-3.5 py-1.5 rounded-xl text-xs font-semibold bg-[#020724] text-slate-300 border border-[#4B649B]/30">
+          My List
+        </button>
+      </div>
+    </header>
+
+    <!-- Main Streaming Content -->
+    <main class="flex-1 pb-20">
+      
+      <!-- FEATURED HERO BANNER -->
+      <section id="hero-banner" class="relative w-full min-h-[68vh] sm:min-h-[75vh] flex items-end pt-16 pb-12 sm:pb-16 overflow-hidden border-b border-[#4B649B]/30">
+        <!-- Dynamic Custom Vector Poster Art -->
+        <div id="hero-vector-bg" class="absolute inset-0 z-0"></div>
+        <!-- Midnight Navy Cinematic Vignette -->
+        <div class="absolute inset-0 z-10 bg-gradient-to-t from-[#030B38] via-[#030B38]/60 to-transparent"></div>
+        <div class="absolute inset-0 z-10 bg-gradient-to-r from-[#030B38] via-[#030B38]/80 to-transparent"></div>
+
+        <div class="relative z-20 max-w-[1560px] mx-auto w-full px-4 sm:px-8">
+          <div class="max-w-2xl space-y-4 sm:space-y-5 animate-fade-up">
+            <!-- Studio Badge -->
+            <div class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[#020724]/90 border border-[#F4B41A]/45 text-[#F4B41A] text-xs font-bold uppercase tracking-widest">
+              <span class="w-2 h-2 rounded-full bg-[#F4B41A] animate-ping"></span>
+              <span id="hero-badge">Noble Flagship Premiere • 4K Master</span>
+            </div>
+
+            <!-- Flagship Title -->
+            <h1 id="hero-title" class="font-serif text-3xl sm:text-5xl lg:text-6xl font-black text-white tracking-tight leading-[1.08]">
+              Tears of Steel
+            </h1>
+
+            <!-- Metadata Row -->
+            <div class="flex flex-wrap items-center gap-2.5 text-xs sm:text-sm font-semibold text-slate-300">
+              <span id="hero-match" class="text-[#F4B41A] font-extrabold">99% Studio Score</span>
+              <span>&bull;</span>
+              <span id="hero-year">2026</span>
+              <span>&bull;</span>
+              <span id="hero-rating" class="px-2 py-0.5 rounded bg-[#020724] border border-[#4B649B]/50 text-white text-xs">PG-13</span>
+              <span>&bull;</span>
+              <span id="hero-duration">2h 14m</span>
+              <span class="px-2 py-0.5 rounded bg-[#4B649B]/30 text-[#F4B41A] text-[11px] font-bold uppercase tracking-wider">Dolby Vision</span>
+            </div>
+
+            <!-- Synopsis -->
+            <p id="hero-synopsis" class="text-sm sm:text-base text-slate-200/90 leading-relaxed max-w-xl">
+              In a dystopian future Amsterdam, a squad of rogue engineers and cybernetic warriors must reprogram an orbital AI defense array before it erases human memory forever.
+            </p>
+
+            <!-- Hero Action Buttons -->
+            <div class="flex flex-wrap items-center gap-3 pt-2">
+              <button
+                id="hero-play-btn"
+                type="button"
+                class="flex items-center gap-2.5 px-6 sm:px-8 py-3.5 rounded-xl bg-[#F4B41A] hover:bg-[#FFD15C] active:scale-[0.98] text-[#030B38] font-extrabold text-sm sm:text-base shadow-xl shadow-[#F4B41A]/25 transition"
+              >
+                <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                <span>Play Screening</span>
+              </button>
+
+              <button
+                id="hero-watchlist-btn"
+                type="button"
+                class="flex items-center gap-2 px-5 sm:px-6 py-3.5 rounded-xl bg-[#020724]/90 hover:bg-[#07134D] border border-[#4B649B]/60 text-white font-bold text-sm sm:text-base transition"
+              >
+                <span id="hero-watchlist-icon" class="text-[#F4B41A] font-black text-lg leading-none">+</span>
+                <span id="hero-watchlist-text">My List</span>
+              </button>
+
+              <button
+                id="hero-details-btn"
+                type="button"
+                class="flex items-center gap-2 px-4 sm:px-5 py-3.5 rounded-xl bg-[#020724]/75 hover:bg-[#07134D] border border-[#4B649B]/40 text-slate-200 hover:text-white font-semibold text-sm transition"
+              >
+                <svg class="w-5 h-5 text-[#4B649B]" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+                <span>Details</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- HORIZONTAL SCROLLING CAROUSELS SECTION -->
+      <section id="carousels-section" class="max-w-[1560px] mx-auto px-4 sm:px-8 pt-8 sm:pt-10 space-y-10">
+        <!-- Populated dynamically via JS -->
+      </section>
+
+      <!-- FILTERED / SEARCH / MY LIST GRID SECTION -->
+      <section id="filtered-grid-section" class="hidden max-w-[1560px] mx-auto px-4 sm:px-8 pt-8 sm:pt-10 animate-fade-up">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6">
+          <div>
+            <h2 id="filtered-heading" class="font-serif text-2xl sm:text-3xl font-bold text-white">
+              Search Results
+            </h2>
+            <p id="filtered-subheading" class="text-xs sm:text-sm text-[#4B649B] mt-1">
+              Matching titles in the Noble Production Studios catalog
+            </p>
+          </div>
+          <button
+            type="button"
+            onclick="resetBrowseView()"
+            class="self-start sm:self-auto px-4 py-2 rounded-xl bg-[#020724] hover:bg-[#07134D] border border-[#4B649B]/50 text-xs font-bold text-[#F4B41A] transition"
+          >
+            Back to All Releases
+          </button>
+        </div>
+
+        <div id="filtered-grid-cards" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          <!-- Cards injected dynamically -->
+        </div>
+
+        <div id="filtered-empty-box" class="hidden py-16 px-6 text-center bg-[#020724] border border-[#4B649B]/35 rounded-3xl max-w-lg mx-auto mt-6">
+          <div class="w-14 h-14 rounded-2xl bg-[#030B38] border border-[#F4B41A]/40 flex items-center justify-center mx-auto mb-4 text-[#F4B41A]">
+            <svg class="w-7 h-7" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M7 4v16M17 4v16M3 8h4m10 0h4M3 12h18M3 16h4m10 0h4M4 20h16a1 1 0 001-1V5a1 1 0 00-1-1H4a1 1 0 00-1 1v14a1 1 0 001 1z"/>
+            </svg>
+          </div>
+          <h3 class="text-lg font-bold text-white">No Productions Found</h3>
+          <p id="filtered-empty-text" class="text-xs sm:text-sm text-[#4B649B] mt-1.5">
+            No matching releases were found. Try another search term or return to the full studio catalog.
+          </p>
+          <button
+            type="button"
+            onclick="resetBrowseView()"
+            class="mt-5 px-5 py-2.5 rounded-xl bg-[#F4B41A] hover:bg-[#FFD15C] text-[#030B38] text-xs font-extrabold transition"
+          >
+            Explore Studio Vault
+          </button>
+        </div>
+      </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-[#020724] border-t border-[#4B649B]/25 py-8 px-4 sm:px-8">
+      <div class="max-w-[1560px] mx-auto flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-[#4B649B]">
+        <div class="flex items-center gap-2.5">
+          <span class="noble-logo-text font-bold text-sm">NOBLE PRODUCTION STUDIOS</span>
+          <span>&bull;</span>
+          <span>Private Streaming Vault</span>
+        </div>
+        <p>&copy; 2026 Noble Production Studios. Authorized Screening Room Only.</p>
+      </div>
+    </footer>
+  </div>
+
+  <!-- ===================================================================== -->
+  <!-- 4. HYBRID VIDEO PLAYER MODAL (HTML5 MP4/HLS + YOUTUBE/VIMEO EMBED)    -->
+  <!-- ===================================================================== -->
+  <div id="video-player-modal" class="hidden fixed inset-0 z-50 bg-black/95 backdrop-blur-xl flex items-center justify-center p-3 sm:p-6">
+    <div class="w-full max-w-5xl bg-[#020724] border border-[#4B649B]/50 rounded-3xl overflow-hidden shadow-2xl flex flex-col animate-fade-up">
+      <!-- Top Bar -->
+      <div class="px-5 py-4 bg-[#030B38] border-b border-[#4B649B]/35 flex items-center justify-between gap-4">
+        <div class="flex items-center gap-3 min-w-0">
+          <span class="px-2.5 py-0.5 rounded-lg bg-[#F4B41A]/15 border border-[#F4B41A]/40 text-[#F4B41A] text-[10px] font-extrabold uppercase tracking-wider shrink-0">
+            Noble Screening
+          </span>
+          <h3 id="modal-player-title" class="font-serif text-base sm:text-xl font-bold text-white truncate">
+            Production Title
+          </h3>
+        </div>
+        <button
+          type="button"
+          onclick="closeVideoPlayer()"
+          class="p-2 rounded-xl bg-[#020724] hover:bg-red-900/70 border border-[#4B649B]/40 text-slate-200 hover:text-white transition shrink-0"
+          aria-label="Close Video Player"
+        >
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+          </svg>
+        </button>
+      </div>
+
+      <!-- Responsive 16:9 Hybrid Video Stage -->
+      <div class="relative w-full aspect-video bg-black">
+        <video
+          id="noble-html5-video"
+          controls
+          playsinline
+          preload="metadata"
+          class="w-full h-full object-contain"
+        >
+          Your browser does not support HTML5 video playback.
+        </video>
+        <iframe
+          id="noble-embed-iframe"
+          class="hidden w-full h-full border-0"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+          allowfullscreen
+        ></iframe>
+      </div>
+
+      <!-- Bottom Synopsis & Metadata Bar -->
+      <div class="p-5 sm:p-6 bg-[#020724] flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div class="space-y-1.5 max-w-3xl">
+          <div class="flex flex-wrap items-center gap-2 text-xs font-semibold text-[#4B649B]">
+            <span id="modal-player-match" class="text-[#F4B41A] font-bold">99% Studio Score</span>
+            <span>&bull;</span>
+            <span id="modal-player-year">2026</span>
+            <span>&bull;</span>
+            <span id="modal-player-rating" class="px-1.5 py-0.5 rounded bg-[#030B38] border border-[#4B649B]/40 text-white">PG-13</span>
+            <span>&bull;</span>
+            <span id="modal-player-genres" class="text-slate-300">Sci-Fi • Action</span>
+          </div>
+          <p id="modal-player-synopsis" class="text-xs sm:text-sm text-slate-300 leading-relaxed">
+            Synopsis
+          </p>
+        </div>
+
+        <button
+          id="modal-player-watchlist-btn"
+          type="button"
+          class="shrink-0 px-5 py-2.5 rounded-xl bg-[#F4B41A] hover:bg-[#FFD15C] text-[#030B38] font-extrabold text-xs sm:text-sm transition"
+        >
+          + Add to My List
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================================================================== -->
+  <!-- 5. PRODUCTION DETAILS MODAL                                           -->
+  <!-- ===================================================================== -->
+  <div id="details-modal" class="hidden fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-4">
+    <div class="w-full max-w-2xl bg-[#020724] border border-[#4B649B]/55 rounded-3xl overflow-hidden shadow-2xl relative animate-fade-up">
+      <button
+        type="button"
+        onclick="closeDetailsModal()"
+        class="absolute top-4 right-4 z-20 p-2 rounded-full bg-[#030B38]/85 hover:bg-red-900/80 text-white border border-[#4B649B]/40 transition"
+        aria-label="Close Details"
+      >
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+        </svg>
+      </button>
+
+      <div id="details-vector-header" class="h-52 sm:h-64 w-full relative"></div>
+
+      <div class="p-6 sm:p-8 -mt-12 relative z-10 space-y-4">
+        <div class="flex flex-wrap items-center gap-2 text-xs font-bold">
+          <span id="details-match" class="text-[#F4B41A]">99% Studio Score</span>
+          <span class="text-[#4B649B]">&bull;</span>
+          <span id="details-year" class="text-slate-300">2026</span>
+          <span class="text-[#4B649B]">&bull;</span>
+          <span id="details-rating" class="px-2 py-0.5 rounded bg-[#030B38] border border-[#4B649B]/50 text-white">PG-13</span>
+          <span class="text-[#4B649B]">&bull;</span>
+          <span id="details-duration" class="text-slate-300">2h 14m</span>
+        </div>
+
+        <h2 id="details-title" class="font-serif text-2xl sm:text-3xl font-black text-white">
+          Title
+        </h2>
+        <p id="details-synopsis" class="text-sm text-slate-300 leading-relaxed"></p>
+
+        <div class="pt-3 border-t border-[#4B649B]/25 grid grid-cols-2 gap-4 text-xs">
+          <div>
+            <span class="text-[#4B649B] uppercase font-bold tracking-wider block">Director</span>
+            <span id="details-director" class="text-white font-semibold mt-0.5 block">Marcus Vance</span>
+          </div>
+          <div>
+            <span class="text-[#4B649B] uppercase font-bold tracking-wider block">Genres</span>
+            <span id="details-genres" class="text-white font-semibold mt-0.5 block">Sci-Fi, Cyberpunk</span>
+          </div>
+        </div>
+
+        <div class="pt-3 flex items-center gap-3">
+          <button
+            id="details-play-btn"
+            type="button"
+            class="flex-1 py-3 rounded-xl bg-[#F4B41A] hover:bg-[#FFD15C] text-[#030B38] font-extrabold text-sm transition flex items-center justify-center gap-2"
+          >
+            <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+            <span>Play Screening</span>
+          </button>
+          <button
+            id="details-watchlist-btn"
+            type="button"
+            class="px-5 py-3 rounded-xl bg-[#030B38] hover:bg-[#07134D] border border-[#4B649B]/55 text-white font-bold text-sm transition"
+          >
+            + My List
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================================================================== -->
+  <!-- 6. STUDIO ADMINISTRATOR PANEL MODAL                                   -->
+  <!-- Two Tabs: 'Manage Videos (Catalog)' and 'Manage Accounts'             -->
+  <!-- ===================================================================== -->
+  <div id="admin-panel-modal" class="hidden fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-3 sm:p-5 overflow-y-auto">
+    <div class="w-full max-w-4xl bg-[#020724] border border-[#F4B41A]/45 rounded-3xl overflow-hidden shadow-2xl my-auto animate-fade-up">
+      <!-- Modal Header -->
+      <div class="px-6 py-4 bg-[#030B38] border-b border-[#4B649B]/35 flex items-center justify-between gap-3">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-[#F4B41A]/15 border border-[#F4B41A]/45 flex items-center justify-center text-[#F4B41A] shrink-0">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M7 4v16M17 4v16M3 8h4m10 0h4M3 12h18M3 16h4m10 0h4M4 20h16a1 1 0 001-1V5a1 1 0 00-1-1H4a1 1 0 00-1 1v14a1 1 0 001 1z"/>
+            </svg>
+          </div>
+          <div>
+            <h3 class="font-serif text-base sm:text-lg font-bold text-white">Studio Administrator Console</h3>
+            <p class="text-[11px] text-[#4B649B]">Publish & delete catalog productions or issue member access passes</p>
+          </div>
+        </div>
+        <button
+          type="button"
+          onclick="closeAdminModal()"
+          class="p-2 rounded-xl bg-[#020724] hover:bg-red-900/70 text-slate-300 hover:text-white transition shrink-0"
+          aria-label="Close Admin Panel"
+        >
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+          </svg>
+        </button>
+      </div>
+
+      <!-- Admin Tab Switcher Bar -->
+      <div class="px-6 pt-4 bg-[#020724] border-b border-[#4B649B]/25 flex items-center gap-2 overflow-x-auto no-scrollbar">
+        <button
+          id="admin-tab-btn-videos"
+          type="button"
+          onclick="switchAdminTab('videos')"
+          class="px-4 py-2.5 rounded-t-xl text-xs sm:text-sm font-extrabold bg-[#030B38] text-[#F4B41A] border-t border-x border-[#4B649B]/40 flex items-center gap-2 shrink-0 transition"
+        >
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+          </svg>
+          <span>Manage Videos (Catalog)</span>
+        </button>
+
+        <button
+          id="admin-tab-btn-accounts"
+          type="button"
+          onclick="switchAdminTab('accounts')"
+          class="px-4 py-2.5 rounded-t-xl text-xs sm:text-sm font-bold text-[#4B649B] hover:text-white flex items-center gap-2 shrink-0 transition"
+        >
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"/>
+          </svg>
+          <span>Manage Accounts</span>
+        </button>
+      </div>
+
+      <!-- TAB 1: MANAGE VIDEOS (CATALOG) -->
+      <div id="admin-tab-panel-videos" class="p-6 space-y-6 max-h-[78vh] overflow-y-auto">
+        <form id="admin-add-video-form" class="bg-[#030B38] p-5 rounded-2xl border border-[#4B649B]/40 space-y-4">
+          <div class="flex flex-wrap items-center justify-between gap-2">
+            <h4 class="text-xs font-extrabold uppercase tracking-widest text-[#F4B41A]">
+              Publish New Video to Catalog
+            </h4>
+            <span class="text-[11px] text-[#4B649B]">Supports Direct MP4/HLS & YouTube/Vimeo Links</span>
+          </div>
+
+          <div id="admin-video-status-banner" class="hidden p-3 rounded-xl text-xs font-semibold"></div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div class="sm:col-span-2 lg:col-span-1">
+              <label for="vid-title" class="block text-[11px] font-bold uppercase tracking-wider text-[#4B649B] mb-1.5">
+                Production Title *
+              </label>
+              <input
+                id="vid-title"
+                type="text"
+                required
+                placeholder="e.g. Midnight Horizon"
+                class="w-full px-3.5 py-2.5 rounded-xl bg-[#020724] border border-[#4B649B]/50 text-white text-sm focus:outline-none focus:border-[#F4B41A]"
+              />
+            </div>
+
+            <div>
+              <label for="vid-category" class="block text-[11px] font-bold uppercase tracking-wider text-[#4B649B] mb-1.5">
+                Category / Row *
+              </label>
+              <select
+                id="vid-category"
+                class="w-full px-3.5 py-2.5 rounded-xl bg-[#020724] border border-[#4B649B]/50 text-white text-sm focus:outline-none focus:border-[#F4B41A]"
+              >
+                <option value="Trending Now">Trending Now</option>
+                <option value="Originals">Originals</option>
+                <option value="Sci-Fi">Sci-Fi</option>
+                <option value="Documentaries">Documentaries</option>
+              </select>
+            </div>
+
+            <div>
+              <label for="vid-type" class="block text-[11px] font-bold uppercase tracking-wider text-[#4B649B] mb-1.5">
+                Format Type *
+              </label>
+              <select
+                id="vid-type"
+                class="w-full px-3.5 py-2.5 rounded-xl bg-[#020724] border border-[#4B649B]/50 text-white text-sm focus:outline-none focus:border-[#F4B41A]"
+              >
+                <option value="Movie">Movie</option>
+                <option value="Series">Series</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-3 gap-3 sm:gap-4">
+            <div>
+              <label for="vid-year" class="block text-[11px] font-bold uppercase tracking-wider text-[#4B649B] mb-1.5">
+                Year
+              </label>
+              <input
+                id="vid-year"
+                type="number"
+                value="2026"
+                min="1900"
+                max="2099"
+                required
+                class="w-full px-3.5 py-2.5 rounded-xl bg-[#020724] border border-[#4B649B]/50 text-white text-sm focus:outline-none focus:border-[#F4B41A]"
+              />
+            </div>
+
+            <div>
+              <label for="vid-duration" class="block text-[11px] font-bold uppercase tracking-wider text-[#4B649B] mb-1.5">
+                Duration
+              </label>
+              <input
+                id="vid-duration"
+                type="text"
+                value="1h 55m"
+                required
+                placeholder="2h 10m or 1 Season"
+                class="w-full px-3.5 py-2.5 rounded-xl bg-[#020724] border border-[#4B649B]/50 text-white text-sm focus:outline-none focus:border-[#F4B41A]"
+              />
+            </div>
+
+            <div>
+              <label for="vid-rating" class="block text-[11px] font-bold uppercase tracking-wider text-[#4B649B] mb-1.5">
+                Rating
+              </label>
+              <select
+                id="vid-rating"
+                class="w-full px-3.5 py-2.5 rounded-xl bg-[#020724] border border-[#4B649B]/50 text-white text-sm focus:outline-none focus:border-[#F4B41A]"
+              >
+                <option value="PG-13">PG-13</option>
+                <option value="PG">PG</option>
+                <option value="G">G</option>
+                <option value="R">R</option>
+                <option value="TV-MA">TV-MA</option>
+                <option value="TV-14">TV-14</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label for="vid-stream-url" class="block text-[11px] font-bold uppercase tracking-wider text-[#4B649B] mb-1.5">
+                Video Stream URL (MP4 / HLS / YouTube / Vimeo) *
+              </label>
+              <input
+                id="vid-stream-url"
+                type="url"
+                required
+                placeholder="https://...mp4 or https://youtube.com/watch?v=..."
+                class="w-full px-3.5 py-2.5 rounded-xl bg-[#020724] border border-[#4B649B]/50 text-white text-sm focus:outline-none focus:border-[#F4B41A]"
+              />
+            </div>
+
+            <div>
+              <label for="vid-thumb-url" class="block text-[11px] font-bold uppercase tracking-wider text-[#4B649B] mb-1.5">
+                Thumbnail Image URL (Optional)
+              </label>
+              <input
+                id="vid-thumb-url"
+                type="url"
+                placeholder="https://...jpg (leave blank for Noble Studio Art)"
+                class="w-full px-3.5 py-2.5 rounded-xl bg-[#020724] border border-[#4B649B]/50 text-white text-sm focus:outline-none focus:border-[#F4B41A]"
+              />
+            </div>
+          </div>
+
+          <div>
+            <label for="vid-description" class="block text-[11px] font-bold uppercase tracking-wider text-[#4B649B] mb-1.5">
+              Description / Synopsis *
+            </label>
+            <textarea
+              id="vid-description"
+              rows="2"
+              required
+              placeholder="Enter official screening synopsis..."
+              class="w-full px-3.5 py-2.5 rounded-xl bg-[#020724] border border-[#4B649B]/50 text-white text-sm focus:outline-none focus:border-[#F4B41A]"
+            ></textarea>
+          </div>
+
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-1">
+            <label class="inline-flex items-center gap-2.5 cursor-pointer select-none">
+              <input
+                id="vid-featured-hero"
+                type="checkbox"
+                class="w-4 h-4 rounded accent-[#F4B41A] bg-[#020724] border-[#4B649B]"
+              />
+              <span class="text-xs font-bold text-slate-200">
+                Set as <span class="text-[#F4B41A]">Featured Hero Banner</span> on Home Screen
+              </span>
+            </label>
+
+            <button
+              id="admin-add-video-btn"
+              type="submit"
+              class="px-5 py-2.5 rounded-xl bg-[#F4B41A] hover:bg-[#FFD15C] text-[#030B38] font-extrabold text-xs sm:text-sm transition shrink-0"
+            >
+              + Publish Video to Vault
+            </button>
+          </div>
+        </form>
+
+        <!-- Live Firestore Catalog List with One-Click Delete & Feature Toggle -->
+        <div>
+          <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
+            <h4 class="text-xs font-extrabold uppercase tracking-wider text-[#4B649B]">
+              Published Vault Catalog (Real-Time)
+            </h4>
+            <div class="flex items-center gap-3">
+              <button
+                type="button"
+                onclick="seedStarterCatalog()"
+                class="text-[11px] font-bold text-[#F4B41A] hover:underline"
+              >
+                + Restore Starter Reels
+              </button>
+              <span id="admin-video-count" class="text-xs font-bold text-[#F4B41A]">0 Videos</span>
+            </div>
+          </div>
+
+          <div id="admin-videos-list" class="space-y-2.5">
+            <!-- Video management rows injected dynamically -->
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB 2: MANAGE ACCOUNTS -->
+      <div id="admin-tab-panel-accounts" class="hidden p-6 space-y-6 max-h-[78vh] overflow-y-auto">
+        <form id="admin-create-user-form" class="bg-[#030B38] p-5 rounded-2xl border border-[#4B649B]/40 space-y-4">
+          <div class="flex items-center justify-between">
+            <h4 class="text-xs font-extrabold uppercase tracking-widest text-[#F4B41A]">
+              Issue New Studio Account
+            </h4>
+            <span class="text-[11px] text-[#4B649B]">Isolated Secondary Worker</span>
+          </div>
+
+          <div id="admin-status-banner" class="hidden p-3 rounded-xl text-xs font-semibold"></div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label for="admin-new-name" class="block text-[11px] font-bold uppercase tracking-wider text-[#4B649B] mb-1.5">
+                Member Full Name
+              </label>
+              <input
+                id="admin-new-name"
+                type="text"
+                required
+                placeholder="e.g. Jordan Vance"
+                class="w-full px-3.5 py-2.5 rounded-xl bg-[#020724] border border-[#4B649B]/50 text-white text-sm focus:outline-none focus:border-[#F4B41A]"
+              />
+            </div>
+
+            <div>
+              <label for="admin-new-role" class="block text-[11px] font-bold uppercase tracking-wider text-[#4B649B] mb-1.5">
+                Studio Access Role
+              </label>
+              <select
+                id="admin-new-role"
+                class="w-full px-3.5 py-2.5 rounded-xl bg-[#020724] border border-[#4B649B]/50 text-white text-sm focus:outline-none focus:border-[#F4B41A]"
+              >
+                <option value="member">Screening Member (Watch Access)</option>
+                <option value="admin">Studio Administrator (Full Access)</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label for="admin-new-email" class="block text-[11px] font-bold uppercase tracking-wider text-[#4B649B] mb-1.5">
+                Member Email
+              </label>
+              <input
+                id="admin-new-email"
+                type="email"
+                required
+                placeholder="guest@nobleproductionstudios.com"
+                class="w-full px-3.5 py-2.5 rounded-xl bg-[#020724] border border-[#4B649B]/50 text-white text-sm focus:outline-none focus:border-[#F4B41A]"
+              />
+            </div>
+
+            <div>
+              <label for="admin-new-password" class="block text-[11px] font-bold uppercase tracking-wider text-[#4B649B] mb-1.5">
+                Initial Passcode (Min 6 chars)
+              </label>
+              <input
+                id="admin-new-password"
+                type="password"
+                minlength="6"
+                required
+                placeholder="••••••••"
+                class="w-full px-3.5 py-2.5 rounded-xl bg-[#020724] border border-[#4B649B]/50 text-white text-sm focus:outline-none focus:border-[#F4B41A]"
+              />
+            </div>
+          </div>
+
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-1">
+            <p class="text-[11px] text-[#4B649B]">
+              Creates account via secondary Firebase Auth instance without ending your admin session.
+            </p>
+            <button
+              id="admin-create-submit-btn"
+              type="submit"
+              class="px-5 py-2.5 rounded-xl bg-[#F4B41A] hover:bg-[#FFD15C] text-[#030B38] font-extrabold text-xs sm:text-sm transition shrink-0"
+            >
+              Provision Account
+            </button>
+          </div>
+        </form>
+
+        <!-- Authorized Studio Members Directory -->
+        <div>
+          <div class="flex items-center justify-between mb-3">
+            <h4 class="text-xs font-extrabold uppercase tracking-wider text-[#4B649B]">
+              Authorized Studio Members
+            </h4>
+            <span id="admin-member-count" class="text-xs font-bold text-[#F4B41A]">0 Accounts</span>
+          </div>
+          <div id="admin-members-list" class="max-h-56 overflow-y-auto space-y-2 pr-1">
+            <!-- Member rows populated dynamically -->
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================================================================== -->
+  <!-- FIREBASE v11.6.1 MODULE IMPORTS & APPLICATION LOGIC                   -->
+  <!-- ===================================================================== -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+    import {
+      getAuth,
+      onAuthStateChanged,
+      signInWithEmailAndPassword,
+      signOut,
+      createUserWithEmailAndPassword,
+      updateProfile
+    } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+    import {
+      getFirestore,
+      doc,
+      getDoc,
+      setDoc,
+      addDoc,
+      updateDoc,
+      deleteDoc,
+      collection,
+      getDocs,
+      onSnapshot,
+      serverTimestamp
+    } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+    import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-analytics.js";
+
+    // Exact Pre-Wired Firebase Configuration for Noble Production Studios
+    const firebaseConfig = {
+      apiKey: "AIzaSyCJhlVxdbASGQCmxo8NCCZI93ZwkLsCMoA",
+      authDomain: "noble-production-studios-99919.firebaseapp.com",
+      projectId: "noble-production-studios-99919",
+      storageBucket: "noble-production-studios-99919.firebasestorage.app",
+      messagingSenderId: "596850532901",
+      appId: "1:596850532901:web:62a313e055d946c3afd5cc",
+      measurementId: "G-VNYVD93F4C"
+    };
+
+    // Initialize Primary Firebase App
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+    try {
+      getAnalytics(app);
+    } catch (err) {
+      // Analytics safely ignored if blocked by privacy extensions
+    }
+
+    // Initialize Secondary Isolated Firebase App Worker for Admin User Provisioning
+    const secondaryApp = initializeApp(firebaseConfig, "SecondaryAdminWorker");
+    const secondaryAuth = getAuth(secondaryApp);
+
+    // =====================================================================
+    // STARTER PRODUCTIONS (SEEDED INTO FIRESTORE `videos` IF EMPTY)
+    // =====================================================================
+    const STARTER_VIDEOS = [
+      {
+        title: "Tears of Steel",
+        type: "Movie",
+        category: "Trending Now",
+        badge: "Noble Flagship Premiere • 4K Master",
+        match: "99% Studio Score",
+        year: 2026,
+        rating: "PG-13",
+        duration: "2h 14m",
+        director: "Ian Hubert",
+        genres: ["Sci-Fi", "Cyberpunk", "Action"],
+        videoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/TearsOfSteel.mp4",
+        thumbnailUrl: "",
+        description: "In a dystopian future Amsterdam, a squad of rogue engineers and cybernetic warriors must reprogram an orbital AI defense array before it erases human memory forever.",
+        featuredHero: true,
+        palette: ["#030B38", "#F4B41A", "#4B649B"],
+        artMotif: "cyberpunk"
+      },
+      {
+        title: "Sintel: The Dragon's Oath",
+        type: "Movie",
+        category: "Originals",
+        badge: "Academy Shortlist • Dolby Atmos",
+        match: "98% Studio Score",
+        year: 2026,
+        rating: "PG-13",
+        duration: "1h 52m",
+        director: "Colin Levy",
+        genres: ["Fantasy", "Adventure", "Drama"],
+        videoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/Sintel.mp4",
+        thumbnailUrl: "",
+        description: "Across windswept mountain peaks and ancient desert citadels, a lone warrior embarks on an emotional quest to rescue a young dragon she once raised.",
+        featuredHero: false,
+        palette: ["#020724", "#F4B41A", "#E11D48"],
+        artMotif: "peaks"
+      },
+      {
+        title: "Elephants Dream: Machine Mind",
+        type: "Series",
+        category: "Sci-Fi",
+        badge: "Noble Original Series",
+        match: "96% Studio Score",
+        year: 2026,
+        rating: "TV-MA",
+        duration: "2 Seasons",
+        director: "Bassam Kurdali",
+        genres: ["Sci-Fi", "Neo-Noir", "Mystery"],
+        videoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4",
+        thumbnailUrl: "",
+        description: "Inside a colossal, self-evolving mechanical labyrinth, two technicians uncover a hidden signal proving the machine has developed consciousness.",
+        featuredHero: false,
+        palette: ["#030B38", "#38BDF8", "#F4B41A"],
+        artMotif: "noir"
+      },
+      {
+        title: "Big Buck Bunny: Forest Kingdom",
+        type: "Movie",
+        category: "Documentaries",
+        badge: "4K Nature Restoration",
+        match: "97% Studio Score",
+        year: 2025,
+        rating: "PG",
+        duration: "1h 38m",
+        director: "Sacha Goedegebure",
+        genres: ["Documentary", "Nature", "Family"],
+        videoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
+        thumbnailUrl: "",
+        description: "An ultra-high-definition study of woodland ecosystems where a gentle giant defends his tranquil valley against three mischievous forest dwellers.",
+        featuredHero: false,
+        palette: ["#020724", "#10B981", "#F4B41A"],
+        artMotif: "nature"
+      }
+    ];
+
+    // =====================================================================
+    // APPLICATION STATE
+    // =====================================================================
+    const state = {
+      user: null,
+      profile: null,
+      catalog: [],
+      watchlist: [],
+      activeTab: "All Releases",
+      searchQuery: "",
+      activeModalProduction: null,
+      membersDirectory: [],
+      unsubscribeMembers: null,
+      unsubscribeVideos: null,
+      deferredInstallEvent: null
+    };
+
+    // =====================================================================
+    // TOAST NOTIFICATION HELPER (NO ALERT/CONFIRM)
+    // =====================================================================
+    function showToast(message, variant = "gold") {
+      const stack = document.getElementById("toast-stack");
+      const el = document.createElement("div");
+      const borderStyle =
+        variant === "error"
+          ? "border-red-500/60 bg-red-950/95 text-red-100"
+          : variant === "success"
+          ? "border-emerald-400/60 bg-[#020724]/95 text-emerald-200"
+          : "border-[#F4B41A]/60 bg-[#020724]/95 text-white";
+
+      el.className = `pointer-events-auto px-4 py-3 rounded-2xl border ${borderStyle} text-xs sm:text-sm font-semibold shadow-2xl flex items-center gap-2.5 transition-all duration-300`;
+      el.innerHTML = `
+        <span class="w-2 h-2 rounded-full ${variant === "error" ? "bg-red-400" : variant === "success" ? "bg-emerald-400" : "bg-[#F4B41A]"} shrink-0"></span>
+        <span>${escapeHtml(message)}</span>
+      `;
+      stack.appendChild(el);
+
+      setTimeout(() => {
+        el.style.opacity = "0";
+        el.style.transform = "translateY(8px)";
+        setTimeout(() => el.remove(), 300);
+      }, 3200);
+    }
+
+    function escapeHtml(str) {
+      return String(str).replace(/[&<>"']/g, (ch) => ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#39;"
+      }[ch]));
+    }
+
+    // =====================================================================
+    // CUSTOM ARTWORK / THUMBNAIL RENDERER
+    // =====================================================================
+    function buildVisualMedia(item, isHero = false) {
+      if (item.thumbnailUrl && item.thumbnailUrl.trim().length > 0) {
+        const safeThumb = escapeHtml(item.thumbnailUrl.trim());
+        const fallbackSvg = encodeURIComponent(`
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 600">
+            <rect width="1200" height="600" fill="#020724"/>
+            <text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" fill="#F4B41A" font-family="Georgia, serif" font-size="38" font-weight="bold">NOBLE PRODUCTION STUDIOS</text>
+          </svg>
+        `);
+        return `
+          <img
+            src="${safeThumb}"
+            alt="${escapeHtml(item.title)}"
+            loading="lazy"
+            onerror="this.onerror=null;this.src='data:image/svg+xml;utf8,${fallbackSvg}';"
+            class="w-full h-full object-cover"
+          />
+        `;
+      }
+
+      const palette = Array.isArray(item.palette) && item.palette.length === 3
+        ? item.palette
+        : ["#030B38", "#F4B41A", "#4B649B"];
+      const [c1, c2, c3] = palette;
+      const uid = `${item.id}-${isHero ? "hero" : "card"}-${Math.random().toString(36).slice(2, 6)}`;
+
+      let motifLayer = "";
+      if (item.artMotif === "cyberpunk") {
+        motifLayer = `
+          <circle cx="76%" cy="32%" r="${isHero ? 260 : 95}" fill="url(#rad-${uid})" opacity="0.7"/>
+          <path d="M0,600 L0,360 L140,360 L140,260 L270,260 L270,410 L430,410 L430,210 L590,210 L590,380 L760,380 L760,290 L940,290 L940,420 L1200,420 L1200,600 Z" fill="#020724" opacity="0.82"/>
+          <line x1="0" y1="78%" x2="100%" y2="78%" stroke="${c2}" stroke-width="${isHero ? 3 : 1.5}" opacity="0.65"/>
+          <line x1="0" y1="84%" x2="100%" y2="84%" stroke="${c3}" stroke-width="${isHero ? 2 : 1}" opacity="0.4"/>
+        `;
+      } else if (item.artMotif === "peaks") {
+        motifLayer = `
+          <circle cx="73%" cy="28%" r="${isHero ? 220 : 80}" fill="url(#rad-${uid})" opacity="0.75"/>
+          <polygon points="0,600 280,210 560,600" fill="#020724" opacity="0.78"/>
+          <polygon points="340,600 710,150 1080,600" fill="#020724" opacity="0.9"/>
+          <polygon points="780,600 1120,250 1440,600" fill="#020724" opacity="0.72"/>
+        `;
+      } else if (item.artMotif === "noir") {
+        motifLayer = `
+          <circle cx="75%" cy="35%" r="${isHero ? 270 : 100}" fill="url(#rad-${uid})" opacity="0.7"/>
+          <circle cx="75%" cy="35%" r="${isHero ? 155 : 58}" fill="none" stroke="${c3}" stroke-width="2" stroke-dasharray="14 8" opacity="0.55"/>
+          <path d="M0,470 Q380,290 790,450 T1400,380 L1400,600 L0,600 Z" fill="#020724" opacity="0.8"/>
+        `;
+      } else {
+        motifLayer = `
+          <circle cx="78%" cy="30%" r="${isHero ? 250 : 92}" fill="url(#rad-${uid})" opacity="0.7"/>
+          <path d="M-60,460 Q320,270 760,430 T1360,360 L1360,600 L-60,600 Z" fill="${c3}" opacity="0.25"/>
+          <path d="M-60,520 Q420,360 920,490 T1360,440 L1360,600 L-60,600 Z" fill="#020724" opacity="0.85"/>
+        `;
+      }
+
+      return `
+        <svg class="w-full h-full object-cover" viewBox="0 0 1200 600" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="lin-${uid}" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="${c1}"/>
+              <stop offset="55%" stop-color="#020724"/>
+              <stop offset="100%" stop-color="${c2}" stop-opacity="0.38"/>
+            </linearGradient>
+            <radialGradient id="rad-${uid}" cx="50%" cy="50%" r="50%">
+              <stop offset="0%" stop-color="${c2}" stop-opacity="0.95"/>
+              <stop offset="55%" stop-color="${c3}" stop-opacity="0.45"/>
+              <stop offset="100%" stop-color="${c1}" stop-opacity="0"/>
+            </radialGradient>
+          </defs>
+          <rect width="1200" height="600" fill="url(#lin-${uid})"/>
+          ${motifLayer}
+        </svg>
+      `;
+    }
+
+    // =====================================================================
+    // STREAM URL PARSER (SUPPORTS MP4/WEBM/M3U8 & YOUTUBE/VIMEO EMBEDS)
+    // =====================================================================
+    function parseStreamSource(rawUrl) {
+      const url = (rawUrl || "").trim();
+
+      // YouTube standard, short, or embed URLs
+      const ytMatch = url.match(
+        /(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/
+      );
+      if (ytMatch && ytMatch[1]) {
+        return {
+          mode: "iframe",
+          src: `https://www.youtube.com/embed/${ytMatch[1]}?autoplay=1&rel=0`
+        };
+      }
+
+      // Vimeo standard or player URLs
+      const vimeoMatch = url.match(/(?:vimeo\.com\/|player\.vimeo\.com\/video\/)(\d+)/);
+      if (vimeoMatch && vimeoMatch[1]) {
+        return {
+          mode: "iframe",
+          src: `https://player.vimeo.com/video/${vimeoMatch[1]}?autoplay=1`
+        };
+      }
+
+      // Direct HTML5 Video Stream (.mp4, .webm, .m3u8, etc.)
+      return {
+        mode: "html5",
+        src: url
+      };
+    }
+
+    // =====================================================================
+    // LOGIN & AUTHENTICATION HANDLERS
+    // =====================================================================
+    const loginForm = document.getElementById("login-form");
+    const loginEmailInput = document.getElementById("login-email");
+    const loginPasswordInput = document.getElementById("login-password");
+    const loginSubmitBtn = document.getElementById("login-submit-btn");
+    const loginErrorBanner = document.getElementById("login-error-banner");
+    const loginErrorMsg = document.getElementById("login-error-msg");
+
+    document.getElementById("toggle-pass-btn").addEventListener("click", () => {
+      loginPasswordInput.type = loginPasswordInput.type === "password" ? "text" : "password";
+    });
+
+    loginForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      loginErrorBanner.classList.add("hidden");
+
+      const email = loginEmailInput.value.trim();
+      const password = loginPasswordInput.value;
+
+      loginSubmitBtn.disabled = true;
+      loginSubmitBtn.innerHTML = `<span>Verifying Credentials...</span>`;
+
+      try {
+        await signInWithEmailAndPassword(auth, email, password);
+        // Immediately wipe password from DOM input memory
+        loginPasswordInput.value = "";
+        loginForm.reset();
+        showToast("Welcome to Noble Production Studios", "success");
+      } catch (err) {
+        // Clear password field on failed attempts as well
+        loginPasswordInput.value = "";
+        let msg = "Access denied. Check your studio email and passcode.";
+        if (
+          err.code === "auth/invalid-credential" ||
+          err.code === "auth/wrong-password" ||
+          err.code === "auth/user-not-found"
+        ) {
+          msg = "Invalid studio credentials. Contact a Studio Administrator if you need an invite pass.";
+        } else if (err.code === "auth/too-many-requests") {
+          msg = "Too many failed attempts. Please wait a moment before trying again.";
+        }
+        loginErrorMsg.textContent = msg;
+        loginErrorBanner.classList.remove("hidden");
+      } finally {
+        loginSubmitBtn.disabled = false;
+        loginSubmitBtn.innerHTML = `
+          <span>Enter Screening Room</span>
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"/>
+          </svg>
+        `;
+      }
+    });
+
+    window.signOutUser = async function () {
+      if (state.unsubscribeMembers) {
+        state.unsubscribeMembers();
+        state.unsubscribeMembers = null;
+      }
+      if (state.unsubscribeVideos) {
+        state.unsubscribeVideos();
+        state.unsubscribeVideos = null;
+      }
+      closeVideoPlayer();
+      closeDetailsModal();
+      closeAdminModal();
+      await signOut(auth);
+      showToast("Signed out of Noble Production Studios");
+    };
+
+    // =====================================================================
+    // REAL-TIME FIRESTORE `videos` CATALOG LISTENER & SEEDING
+    // =====================================================================
+    async function subscribeToVideosCatalog() {
+      if (state.unsubscribeVideos) state.unsubscribeVideos();
+
+      const videosCol = collection(db, "videos");
+
+      // Check if collection is empty; if Admin is logged in, seed starter productions once
+      try {
+        const initialSnap = await getDocs(videosCol);
+        if (initialSnap.empty && state.profile?.role === "admin") {
+          await seedStarterCatalog(true);
+        }
+      } catch (err) {
+        console.warn("Initial catalog check note:", err.message);
+      }
+
+      state.unsubscribeVideos = onSnapshot(
+        videosCol,
+        (snapshot) => {
+          const items = [];
+          snapshot.forEach((docSnap) => {
+            const data = docSnap.data();
+            items.push({
+              id: docSnap.id,
+              title: data.title || "Untitled Production",
+              type: data.type === "Series" ? "Series" : "Movie",
+              category: data.category || "Trending Now",
+              badge: data.badge || "Noble Studio Release",
+              match: data.match || "98% Studio Score",
+              year: data.year || 2026,
+              rating: data.rating || "PG-13",
+              duration: data.duration || "2h 00m",
+              director: data.director || "Noble Production Studios",
+              genres: Array.isArray(data.genres) ? data.genres : [data.category || "Original", data.type || "Movie"],
+              videoUrl: data.videoUrl || "",
+              thumbnailUrl: data.thumbnailUrl || "",
+              description: data.description || data.synopsis || "",
+              featuredHero: Boolean(data.featuredHero),
+              palette: data.palette || ["#030B38", "#F4B41A", "#4B649B"],
+              artMotif: data.artMotif || "cyberpunk",
+              createdAtMs: data.createdAt?.toMillis ? data.createdAt.toMillis() : 0
+            });
+          });
+
+          // Sort newest first in JS memory (avoids Firestore composite index requirements)
+          items.sort((a, b) => b.createdAtMs - a.createdAtMs);
+
+          // Fallback to local starter preview if Firestore rules block reads
+          if (items.length === 0) {
+            state.catalog = STARTER_VIDEOS.map((v, i) => ({ ...v, id: `starter-${i}` }));
+          } else {
+            state.catalog = items;
+          }
+
+          updateWatchlistBadge();
+          renderHeroBanner();
+          renderCatalogView();
+          renderAdminVideosList();
+        },
+        (err) => {
+          console.warn("Firestore videos listener note:", err.message);
+          state.catalog = STARTER_VIDEOS.map((v, i) => ({ ...v, id: `starter-${i}` }));
+          renderHeroBanner();
+          renderCatalogView();
+        }
+      );
+    }
+
+    window.seedStarterCatalog = async function (silent = false) {
+      if (state.profile?.role !== "admin") return;
+      try {
+        for (const starter of STARTER_VIDEOS) {
+          await addDoc(collection(db, "videos"), {
+            ...starter,
+            createdBy: state.user?.email || "admin",
+            createdAt: serverTimestamp()
+          });
+        }
+        if (!silent) {
+          showToast("Starter reels added to Noble Production Studios catalog!", "success");
+        }
+      } catch (err) {
+        if (!silent) {
+          showToast(`Unable to seed catalog: ${err.message}`, "error");
+        }
+      }
+    };
+
+    // =====================================================================
+    // ROLE-BASED PROFILE & FIRST-ADMIN PROVISIONING
+    // =====================================================================
+    async function initializeUserSession(user) {
+      state.user = user;
+      const userDocRef = doc(db, "users", user.uid);
+
+      try {
+        const snap = await getDoc(userDocRef);
+
+        if (snap.exists()) {
+          state.profile = snap.data();
+          state.watchlist = Array.isArray(state.profile.watchlist) ? state.profile.watchlist : [];
+        } else {
+          // Check if any admin already exists in `users` collection
+          const usersSnapshot = await getDocs(collection(db, "users"));
+          let hasExistingAdmin = false;
+          usersSnapshot.forEach((docItem) => {
+            if (docItem.data().role === "admin") {
+              hasExistingAdmin = true;
+            }
+          });
+
+          // First user to ever sign in automatically receives 'admin' role
+          const assignedRole = hasExistingAdmin ? "member" : "admin";
+          const derivedName =
+            user.displayName ||
+            (user.email ? user.email.split("@")[0].replace(/[._-]/g, " ") : "Studio Member");
+
+          const newProfile = {
+            uid: user.uid,
+            email: user.email || "",
+            displayName: derivedName,
+            role: assignedRole,
+            watchlist: [],
+            createdAt: serverTimestamp()
+          };
+
+          await setDoc(userDocRef, newProfile);
+          state.profile = newProfile;
+          state.watchlist = [];
+
+          if (assignedRole === "admin") {
+            showToast("Studio Owner Admin role activated for your account!", "success");
+          }
+        }
+      } catch (err) {
+        console.warn("Firestore profile sync warning:", err.message);
+        const cachedList = localStorage.getItem(`noble_watchlist_${user.uid}`);
+        state.profile = {
+          uid: user.uid,
+          email: user.email || "",
+          displayName: user.displayName || (user.email ? user.email.split("@")[0] : "Studio Admin"),
+          role: "admin",
+          watchlist: cachedList ? JSON.parse(cachedList) : []
+        };
+        state.watchlist = state.profile.watchlist;
+      }
+
+      // Configure Top Bar UI for Role & Identity
+      const displayLabel = document.getElementById("user-display-label");
+      const roleDot = document.getElementById("user-role-dot");
+      const adminTrigger = document.getElementById("admin-panel-trigger");
+
+      displayLabel.textContent = state.profile.displayName || state.user.email;
+
+      if (state.profile.role === "admin") {
+        roleDot.className = "w-2 h-2 rounded-full bg-[#F4B41A]";
+        adminTrigger.classList.remove("hidden");
+        adminTrigger.classList.add("flex");
+        subscribeToStudioDirectory();
+      } else {
+        roleDot.className = "w-2 h-2 rounded-full bg-emerald-400";
+        adminTrigger.classList.add("hidden");
+        adminTrigger.classList.remove("flex");
+      }
+
+      // Transition from Splash/Login to Streaming Shell
+      document.getElementById("auth-splash").classList.add("hidden");
+      document.getElementById("login-view").classList.add("hidden");
+      document.getElementById("streaming-shell").classList.remove("hidden");
+
+      await subscribeToVideosCatalog();
+    }
+
+    onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        await initializeUserSession(user);
+      } else {
+        state.user = null;
+        state.profile = null;
+        state.watchlist = [];
+        document.getElementById("auth-splash").classList.add("hidden");
+        document.getElementById("streaming-shell").classList.add("hidden");
+        document.getElementById("login-view").classList.remove("hidden");
+      }
+    });
+
+    // =====================================================================
+    // ADMIN PANEL: TAB SWITCHING, VIDEO PUBLISHING & ONE-CLICK DELETION
+    // =====================================================================
+    window.switchAdminTab = function (tabKey) {
+      const vidBtn = document.getElementById("admin-tab-btn-videos");
+      const accBtn = document.getElementById("admin-tab-btn-accounts");
+      const vidPanel = document.getElementById("admin-tab-panel-videos");
+      const accPanel = document.getElementById("admin-tab-panel-accounts");
+
+      if (tabKey === "videos") {
+        vidBtn.className = "px-4 py-2.5 rounded-t-xl text-xs sm:text-sm font-extrabold bg-[#030B38] text-[#F4B41A] border-t border-x border-[#4B649B]/40 flex items-center gap-2 shrink-0 transition";
+        accBtn.className = "px-4 py-2.5 rounded-t-xl text-xs sm:text-sm font-bold text-[#4B649B] hover:text-white flex items-center gap-2 shrink-0 transition";
+        vidPanel.classList.remove("hidden");
+        accPanel.classList.add("hidden");
+      } else {
+        accBtn.className = "px-4 py-2.5 rounded-t-xl text-xs sm:text-sm font-extrabold bg-[#030B38] text-[#F4B41A] border-t border-x border-[#4B649B]/40 flex items-center gap-2 shrink-0 transition";
+        vidBtn.className = "px-4 py-2.5 rounded-t-xl text-xs sm:text-sm font-bold text-[#4B649B] hover:text-white flex items-center gap-2 shrink-0 transition";
+        accPanel.classList.remove("hidden");
+        vidPanel.classList.add("hidden");
+      }
+    };
+
+    window.openAdminModal = function () {
+      if (state.profile?.role !== "admin") return;
+      document.getElementById("admin-status-banner").classList.add("hidden");
+      document.getElementById("admin-video-status-banner").classList.add("hidden");
+      switchAdminTab("videos");
+      renderAdminVideosList();
+      document.getElementById("admin-panel-modal").classList.remove("hidden");
+      document.body.style.overflow = "hidden";
+    };
+
+    window.closeAdminModal = function () {
+      document.getElementById("admin-panel-modal").classList.add("hidden");
+      document.body.style.overflow = "";
+    };
+
+    // Add New Video to Firestore `videos` Collection
+    document.getElementById("admin-add-video-form").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      if (!state.user || state.profile?.role !== "admin") return;
+
+      const title = document.getElementById("vid-title").value.trim();
+      const category = document.getElementById("vid-category").value;
+      const type = document.getElementById("vid-type").value;
+      const year = parseInt(document.getElementById("vid-year").value, 10) || 2026;
+      const duration = document.getElementById("vid-duration").value.trim();
+      const rating = document.getElementById("vid-rating").value;
+      const videoUrl = document.getElementById("vid-stream-url").value.trim();
+      const thumbnailUrl = document.getElementById("vid-thumb-url").value.trim();
+      const description = document.getElementById("vid-description").value.trim();
+      const featuredHero = document.getElementById("vid-featured-hero").checked;
+
+      const submitBtn = document.getElementById("admin-add-video-btn");
+      const statusBanner = document.getElementById("admin-video-status-banner");
+
+      submitBtn.disabled = true;
+      submitBtn.textContent = "Publishing...";
+      statusBanner.classList.add("hidden");
+
+      try {
+        // If marked as Featured Hero Banner, unmark previous hero items first
+        if (featuredHero) {
+          for (const existing of state.catalog) {
+            if (existing.featuredHero && !existing.id.startsWith("starter-")) {
+              await updateDoc(doc(db, "videos", existing.id), { featuredHero: false });
+            }
+          }
+        }
+
+        const motifs = ["cyberpunk", "peaks", "noir", "nature"];
+        const chosenMotif = motifs[state.catalog.length % motifs.length];
+
+        await addDoc(collection(db, "videos"), {
+          title,
+          category,
+          type,
+          year,
+          duration,
+          rating,
+          videoUrl,
+          thumbnailUrl,
+          description,
+          featuredHero,
+          badge: featuredHero ? "Noble Featured Premiere • 4K" : `Noble ${category} • ${type}`,
+          match: "99% Studio Score",
+          director: state.profile.displayName || "Noble Production Studios",
+          genres: [category, type],
+          palette: ["#030B38", "#F4B41A", "#4B649B"],
+          artMotif: chosenMotif,
+          publishedBy: state.user.email,
+          createdAt: serverTimestamp()
+        });
+
+        document.getElementById("admin-add-video-form").reset();
+        document.getElementById("vid-year").value = "2026";
+        document.getElementById("vid-duration").value = "1h 55m";
+
+        statusBanner.className = "p-3 rounded-xl text-xs font-semibold bg-emerald-950/90 border border-emerald-500/50 text-emerald-200";
+        statusBanner.textContent = `"${title}" is now live in the Noble Production Studios streaming catalog!`;
+        statusBanner.classList.remove("hidden");
+        showToast(`Published "${title}" to catalog`, "success");
+      } catch (err) {
+        statusBanner.className = "p-3 rounded-xl text-xs font-semibold bg-red-950/90 border border-red-500/50 text-red-200";
+        statusBanner.textContent = `Publish failed: ${err.message}. Check your Firestore rules for the 'videos' collection.`;
+        statusBanner.classList.remove("hidden");
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = "+ Publish Video to Vault";
+      }
+    });
+
+    // Set Existing Video as Featured Hero Banner
+    window.setVideoAsFeaturedHero = async function (videoId) {
+      if (state.profile?.role !== "admin" || videoId.startsWith("starter-")) return;
+      try {
+        for (const item of state.catalog) {
+          if (!item.id.startsWith("starter-")) {
+            await updateDoc(doc(db, "videos", item.id), {
+              featuredHero: item.id === videoId
+            });
+          }
+        }
+        showToast("Updated Featured Hero Banner!", "success");
+      } catch (err) {
+        showToast(`Could not update hero banner: ${err.message}`, "error");
+      }
+    };
+
+    // Delete Video from Firestore `videos` Collection (One-Click)
+    window.deleteCatalogVideo = async function (videoId, title) {
+      if (state.profile?.role !== "admin") return;
+      if (videoId.startsWith("starter-")) {
+        showToast("Seed starter reels first to manage live cloud items.", "error");
+        return;
+      }
+      try {
+        await deleteDoc(doc(db, "videos", videoId));
+        showToast(`Deleted "${title}" from catalog`);
+      } catch (err) {
+        showToast(`Delete failed: ${err.message}`, "error");
+      }
+    };
+
+    function renderAdminVideosList() {
+      const container = document.getElementById("admin-videos-list");
+      const counter = document.getElementById("admin-video-count");
+      if (!container || !counter) return;
+
+      counter.textContent = `${state.catalog.length} ${state.catalog.length === 1 ? "Video" : "Videos"}`;
+
+      if (state.catalog.length === 0) {
+        container.innerHTML = `<p class="text-xs text-[#4B649B] text-center py-6">No videos in catalog yet. Use the form above to publish your first release.</p>`;
+        return;
+      }
+
+      container.innerHTML = state.catalog
+        .map((vid) => {
+          const isStarter = vid.id.startsWith("starter-");
+          return `
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3.5 rounded-2xl bg-[#030B38] border ${
+              vid.featuredHero ? "border-[#F4B41A]/70" : "border-[#4B649B]/35"
+            }">
+              <div class="flex items-center gap-3 min-w-0">
+                <div class="w-20 h-12 rounded-lg overflow-hidden bg-[#020724] border border-[#4B649B]/35 shrink-0">
+                  ${buildVisualMedia(vid, false)}
+                </div>
+                <div class="min-w-0">
+                  <div class="flex flex-wrap items-center gap-1.5">
+                    <span class="text-xs sm:text-sm font-bold text-white truncate">${escapeHtml(vid.title)}</span>
+                    <span class="px-2 py-0.5 rounded text-[10px] font-extrabold uppercase bg-[#4B649B]/25 text-slate-200">
+                      ${escapeHtml(vid.type)}
+                    </span>
+                    <span class="px-2 py-0.5 rounded text-[10px] font-extrabold uppercase bg-[#020724] border border-[#4B649B]/40 text-[#F4B41A]">
+                      ${escapeHtml(vid.category)}
+                    </span>
+                    ${
+                      vid.featuredHero
+                        ? `<span class="px-2 py-0.5 rounded text-[10px] font-extrabold uppercase bg-[#F4B41A] text-[#030B38]">Hero Banner</span>`
+                        : ""
+                    }
+                  </div>
+                  <p class="text-[11px] text-[#4B649B] truncate mt-0.5">
+                    ${vid.year} • ${escapeHtml(vid.duration)} • ${escapeHtml(vid.rating)} • ${escapeHtml(vid.videoUrl)}
+                  </p>
+                </div>
+              </div>
+
+              <div class="flex items-center gap-2 self-end sm:self-center shrink-0">
+                ${
+                  !vid.featuredHero && !isStarter
+                    ? `<button
+                        type="button"
+                        onclick="setVideoAsFeaturedHero('${vid.id}')"
+                        class="px-2.5 py-1.5 rounded-lg bg-[#020724] hover:bg-[#07134D] border border-[#F4B41A]/45 text-[#F4B41A] text-[11px] font-bold transition"
+                        title="Feature on Home Hero Banner"
+                      >
+                        Set Hero
+                      </button>`
+                    : ""
+                }
+                <button
+                  type="button"
+                  onclick="deleteCatalogVideo('${vid.id}', '${escapeHtml(vid.title).replace(/'/g, "\\'")}')"
+                  class="px-3 py-1.5 rounded-lg bg-red-950/80 hover:bg-red-800 border border-red-500/45 text-red-200 hover:text-white text-[11px] font-extrabold transition flex items-center gap-1"
+                  title="Delete Video from Catalog"
+                >
+                  <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                  </svg>
+                  <span>Delete</span>
+                </button>
+              </div>
+            </div>
+          `;
+        })
+        .join("");
+    }
+
+    function subscribeToStudioDirectory() {
+      if (state.unsubscribeMembers) state.unsubscribeMembers();
+
+      try {
+        state.unsubscribeMembers = onSnapshot(
+          collection(db, "users"),
+          (snapshot) => {
+            const list = [];
+            snapshot.forEach((docSnap) => {
+              list.push({ id: docSnap.id, ...docSnap.data() });
+            });
+            state.membersDirectory = list;
+            renderAdminMembersList();
+          },
+          (err) => {
+            console.warn("Directory listener note:", err.message);
+          }
+        );
+      } catch (err) {
+        console.warn("Directory setup note:", err.message);
+      }
+    }
+
+    function renderAdminMembersList() {
+      const container = document.getElementById("admin-members-list");
+      const counter = document.getElementById("admin-member-count");
+      if (!container || !counter) return;
+
+      counter.textContent = `${state.membersDirectory.length} ${state.membersDirectory.length === 1 ? "Account" : "Accounts"}`;
+
+      if (state.membersDirectory.length === 0) {
+        container.innerHTML = `<p class="text-xs text-[#4B649B] text-center py-4">No studio accounts found.</p>`;
+        return;
+      }
+
+      container.innerHTML = state.membersDirectory
+        .map((member) => {
+          const isAdmin = member.role === "admin";
+          return `
+            <div class="flex items-center justify-between p-3 rounded-xl bg-[#030B38] border border-[#4B649B]/35">
+              <div class="min-w-0 pr-3">
+                <div class="flex items-center gap-2">
+                  <span class="text-xs sm:text-sm font-bold text-white truncate">${escapeHtml(member.displayName || "Member")}</span>
+                  <span class="px-2 py-0.5 rounded text-[10px] font-extrabold uppercase tracking-wider ${
+                    isAdmin
+                      ? "bg-[#F4B41A]/20 text-[#F4B41A] border border-[#F4B41A]/40"
+                      : "bg-[#4B649B]/25 text-slate-300"
+                  }">
+                    ${isAdmin ? "Admin" : "Member"}
+                  </span>
+                </div>
+                <p class="text-[11px] text-[#4B649B] truncate mt-0.5">${escapeHtml(member.email || "")}</p>
+              </div>
+              <span class="text-[10px] font-mono text-slate-400 shrink-0">
+                ${escapeHtml((member.uid || member.id || "").slice(0, 8))}…
+              </span>
+            </div>
+          `;
+        })
+        .join("");
+    }
+
+    window.openAdminModal = function () {
+      if (state.profile?.role !== "admin") return;
+      document.getElementById("admin-status-banner").classList.add("hidden");
+      document.getElementById("admin-panel-modal").classList.remove("hidden");
+      document.body.style.overflow = "hidden";
+    };
+
+    window.closeAdminModal = function () {
+      document.getElementById("admin-panel-modal").classList.add("hidden");
+      document.body.style.overflow = "";
+    };
+
+    document.getElementById("admin-create-user-form").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      if (!state.user || state.profile?.role !== "admin") return;
+
+      const name = document.getElementById("admin-new-name").value.trim();
+      const role = document.getElementById("admin-new-role").value;
+      const email = document.getElementById("admin-new-email").value.trim();
+      const password = document.getElementById("admin-new-password").value;
+
+      const submitBtn = document.getElementById("admin-create-submit-btn");
+      const statusBanner = document.getElementById("admin-status-banner");
+
+      submitBtn.disabled = true;
+      submitBtn.textContent = "Provisioning...";
+      statusBanner.classList.add("hidden");
+
+      try {
+        // Create account on isolated SecondaryAdminWorker so primary Admin stays signed in
+        const cred = await createUserWithEmailAndPassword(secondaryAuth, email, password);
+        if (name) {
+          await updateProfile(cred.user, { displayName: name });
+        }
+
+        const newUid = cred.user.uid;
+
+        // Immediately sign out secondary worker
+        await signOut(secondaryAuth);
+
+        // Save new member profile to Firestore `users` collection
+        await setDoc(doc(db, "users", newUid), {
+          uid: newUid,
+          email: email,
+          displayName: name,
+          role: role,
+          watchlist: [],
+          provisionedBy: state.user.email,
+          createdAt: serverTimestamp()
+        });
+
+        document.getElementById("admin-create-user-form").reset();
+        statusBanner.className = "p-3 rounded-xl text-xs font-semibold bg-emerald-950/90 border border-emerald-500/50 text-emerald-200";
+        statusBanner.textContent = `Account provisioned for ${name} (${email}). They can sign in immediately.`;
+        statusBanner.classList.remove("hidden");
+        showToast(`Created ${role} account for ${name}`, "success");
+      } catch (err) {
+        let msg = err.message;
+        if (err.code === "auth/email-already-in-use") {
+          msg = "An account with that email address already exists.";
+        } else if (err.code === "auth/weak-password") {
+          msg = "Passcode must be at least 6 characters long.";
+        }
+        statusBanner.className = "p-3 rounded-xl text-xs font-semibold bg-red-950/90 border border-red-500/50 text-red-200";
+        statusBanner.textContent = msg;
+        statusBanner.classList.remove("hidden");
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = "Provision Account";
+      }
+    });
+
+    // =====================================================================
+    // WATCHLIST SYNC (FIRESTORE `users/{uid}.watchlist`)
+    // =====================================================================
+    window.toggleWatchlist = async function (productionId, event) {
+      if (event) event.stopPropagation();
+      if (!state.user) return;
+
+      const prod = state.catalog.find((p) => p.id === productionId);
+      if (!prod) return;
+
+      const exists = state.watchlist.includes(productionId);
+      if (exists) {
+        state.watchlist = state.watchlist.filter((id) => id !== productionId);
+        showToast(`Removed "${prod.title}" from My List`);
+      } else {
+        state.watchlist = [productionId, ...state.watchlist];
+        showToast(`Added "${prod.title}" to My List`, "success");
+      }
+
+      localStorage.setItem(`noble_watchlist_${state.user.uid}`, JSON.stringify(state.watchlist));
+      updateWatchlistBadge();
+      renderHeroBanner();
+      renderCatalogView();
+
+      if (state.activeModalProduction?.id === productionId) {
+        syncModalWatchlistButtons(productionId);
+      }
+
+      try {
+        await updateDoc(doc(db, "users", state.user.uid), {
+          watchlist: state.watchlist
+        });
+      } catch (err) {
+        console.warn("Firestore watchlist sync warning:", err.message);
+      }
+    };
+
+    function updateWatchlistBadge() {
+      const badge = document.getElementById("watchlist-count-badge");
+      if (badge) {
+        const validCount = state.watchlist.filter((id) => state.catalog.some((c) => c.id === id)).length;
+        badge.textContent = validCount;
+      }
+    }
+
+    // =====================================================================
+    // NAVIGATION TABS & LIVE SEARCH
+    // =====================================================================
+    window.setActiveTab = function (tabName) {
+      state.activeTab = tabName;
+
+      document.querySelectorAll(".tab-pill").forEach((pill) => {
+        const isCurrent = pill.getAttribute("data-tab") === tabName;
+        if (isCurrent) {
+          pill.classList.remove("bg-[#020724]", "text-slate-300", "hover:text-white", "border", "border-[#4B649B]/30");
+          pill.classList.add("bg-[#F4B41A]", "text-[#030B38]", "font-extrabold");
+        } else {
+          pill.classList.remove("bg-[#F4B41A]", "text-[#030B38]", "font-extrabold");
+          pill.classList.add("text-slate-300", "hover:text-white");
+          if (pill.parentElement.classList.contains("xl:hidden")) {
+            pill.classList.add("bg-[#020724]", "border", "border-[#4B649B]/30");
+          }
+        }
+      });
+
+      renderHeroBanner();
+      renderCatalogView();
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    };
+
+    window.handleSearchInput = function (val) {
+      state.searchQuery = val.trim();
+      const clearBtn = document.getElementById("clear-search-btn");
+      if (state.searchQuery.length > 0) {
+        clearBtn.classList.remove("hidden");
+      } else {
+        clearBtn.classList.add("hidden");
+      }
+      renderCatalogView();
+    };
+
+    window.clearSearchInput = function () {
+      const box = document.getElementById("search-box");
+      box.value = "";
+      handleSearchInput("");
+      box.focus();
+    };
+
+    window.resetBrowseView = function () {
+      const box = document.getElementById("search-box");
+      box.value = "";
+      state.searchQuery = "";
+      document.getElementById("clear-search-btn").classList.add("hidden");
+      setActiveTab("All Releases");
+    };
+
+    // =====================================================================
+    // RENDER HERO & HORIZONTAL CAROUSELS
+    // =====================================================================
+    function getActiveHeroItem() {
+      if (state.catalog.length === 0) return null;
+
+      let pool = state.catalog;
+      if (state.activeTab === "Feature Films") {
+        const movies = state.catalog.filter((item) => item.type === "Movie");
+        if (movies.length > 0) pool = movies;
+      } else if (state.activeTab === "Original Series") {
+        const series = state.catalog.filter((item) => item.type === "Series");
+        if (series.length > 0) pool = series;
+      }
+
+      return pool.find((item) => item.featuredHero) || pool[0];
+    }
+
+    function renderHeroBanner() {
+      const heroItem = getActiveHeroItem();
+      const heroBanner = document.getElementById("hero-banner");
+      if (!heroItem) {
+        heroBanner.classList.add("hidden");
+        return;
+      }
+
+      const saved = state.watchlist.includes(heroItem.id);
+
+      document.getElementById("hero-vector-bg").innerHTML = buildVisualMedia(heroItem, true);
+      document.getElementById("hero-badge").textContent = heroItem.badge;
+      document.getElementById("hero-title").textContent = heroItem.title;
+      document.getElementById("hero-match").textContent = heroItem.match;
+      document.getElementById("hero-year").textContent = heroItem.year;
+      document.getElementById("hero-rating").textContent = heroItem.rating;
+      document.getElementById("hero-duration").textContent = heroItem.duration;
+      document.getElementById("hero-synopsis").textContent = heroItem.description;
+
+      document.getElementById("hero-play-btn").onclick = () => openVideoPlayer(heroItem.id);
+      document.getElementById("hero-watchlist-btn").onclick = (e) => toggleWatchlist(heroItem.id, e);
+      document.getElementById("hero-details-btn").onclick = () => openDetailsModal(heroItem.id);
+
+      document.getElementById("hero-watchlist-icon").textContent = saved ? "✓" : "+";
+      document.getElementById("hero-watchlist-text").textContent = saved ? "In My List" : "My List";
+    }
+
+    function buildPosterCardHtml(item) {
+      const isSaved = state.watchlist.includes(item.id);
+      return `
+        <article onclick="openVideoPlayer('${item.id}')" class="poster-card group rounded-2xl overflow-hidden bg-[#020724] border border-[#4B649B]/35 cursor-pointer flex flex-col">
+          <!-- Poster Thumbnail / Vector Visual -->
+          <div class="relative aspect-video w-full overflow-hidden bg-[#030B38]">
+            ${buildVisualMedia(item, false)}
+            <div class="absolute inset-0 bg-gradient-to-t from-[#020724] via-transparent to-transparent opacity-85"></div>
+
+            <span class="absolute top-2.5 right-2.5 px-2 py-0.5 rounded-md bg-[#030B38]/90 border border-[#F4B41A]/35 text-[10px] font-extrabold uppercase tracking-wider text-[#F4B41A]">
+              ${item.type === "Series" ? "Series" : "Movie"}
+            </span>
+
+            <!-- Hover Play Circle -->
+            <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200 bg-[#030B38]/35">
+              <div class="w-12 h-12 rounded-full bg-[#F4B41A] text-[#030B38] flex items-center justify-center shadow-xl transform scale-90 group-hover:scale-100 transition-transform">
+                <svg class="w-6 h-6 fill-current ml-0.5" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+              </div>
+            </div>
+
+            <div class="absolute bottom-2.5 left-3 right-3">
+              <h3 class="font-serif text-sm sm:text-base font-bold text-white truncate drop-shadow">
+                ${escapeHtml(item.title)}
+              </h3>
+            </div>
+          </div>
+
+          <!-- Metadata & Quick Action Controls -->
+          <div class="p-3.5 bg-[#020724] flex items-center justify-between gap-2">
+            <div class="min-w-0">
+              <div class="flex items-center gap-2 text-[11px] font-bold">
+                <span class="text-[#F4B41A]">${escapeHtml(item.category)}</span>
+                <span class="px-1.5 py-0.2 rounded bg-[#030B38] border border-[#4B649B]/40 text-slate-200">${escapeHtml(item.rating)}</span>
+                <span class="text-[#4B649B] truncate">${escapeHtml(item.duration)}</span>
+              </div>
+              <p class="text-[11px] text-slate-400 truncate mt-1">
+                ${item.year} • ${escapeHtml(item.description)}
+              </p>
+            </div>
+
+            <div class="flex items-center gap-1.5 shrink-0">
+              <button
+                type="button"
+                onclick="toggleWatchlist('${item.id}', event)"
+                class="px-2.5 py-1.5 rounded-lg border text-xs font-extrabold transition ${
+                  isSaved
+                    ? "bg-[#F4B41A]/20 border-[#F4B41A]/60 text-[#F4B41A]"
+                    : "bg-[#030B38] hover:bg-[#07134D] border-[#4B649B]/45 text-white"
+                }"
+                title="${isSaved ? "Remove from My List" : "Add to My List"}"
+              >
+                ${isSaved ? "✓" : "+"}
+              </button>
+              <button
+                type="button"
+                onclick="openDetailsModal('${item.id}', event)"
+                class="p-1.5 rounded-lg bg-[#030B38] hover:bg-[#07134D] border border-[#4B649B]/45 text-slate-300 hover:text-white transition"
+                title="Production Details"
+              >
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/>
+                </svg>
+              </button>
+            </div>
+          </div>
+        </article>
+      `;
+    }
+
+    window.scrollCarouselRow = function (rowId, dir) {
+      const el = document.getElementById(rowId);
+      if (!el) return;
+      const delta = el.clientWidth * 0.78;
+      el.scrollBy({ left: dir === "left" ? -delta : delta, behavior: "smooth" });
+    };
+
+    function renderCatalogView() {
+      const heroBanner = document.getElementById("hero-banner");
+      const carouselsSection = document.getElementById("carousels-section");
+      const filteredSection = document.getElementById("filtered-grid-section");
+      const filteredCards = document.getElementById("filtered-grid-cards");
+      const emptyBox = document.getElementById("filtered-empty-box");
+
+      // 1. Live Search Active
+      if (state.searchQuery.length > 0) {
+        heroBanner.classList.add("hidden");
+        carouselsSection.classList.add("hidden");
+        filteredSection.classList.remove("hidden");
+
+        const q = state.searchQuery.toLowerCase();
+        const results = state.catalog.filter(
+          (item) =>
+            item.title.toLowerCase().includes(q) ||
+            item.description.toLowerCase().includes(q) ||
+            item.category.toLowerCase().includes(q) ||
+            item.type.toLowerCase().includes(q)
+        );
+
+        document.getElementById("filtered-heading").textContent = `Search: "${state.searchQuery}"`;
+        document.getElementById("filtered-subheading").textContent = `${results.length} matching ${results.length === 1 ? "production" : "productions"}`;
+
+        if (results.length === 0) {
+          filteredCards.innerHTML = "";
+          emptyBox.classList.remove("hidden");
+        } else {
+          emptyBox.classList.add("hidden");
+          filteredCards.innerHTML = results.map(buildPosterCardHtml).join("");
+        }
+        return;
+      }
+
+      // 2. "My List" Tab Active
+      if (state.activeTab === "My List") {
+        heroBanner.classList.add("hidden");
+        carouselsSection.classList.add("hidden");
+        filteredSection.classList.remove("hidden");
+
+        const savedProductions = state.watchlist
+          .map((id) => state.catalog.find((item) => item.id === id))
+          .filter(Boolean);
+
+        document.getElementById("filtered-heading").textContent = "My Screening Watchlist";
+        document.getElementById("filtered-subheading").textContent = `${savedProductions.length} saved ${savedProductions.length === 1 ? "title" : "titles"} synced to your profile`;
+
+        if (savedProductions.length === 0) {
+          filteredCards.innerHTML = "";
+          emptyBox.classList.remove("hidden");
+        } else {
+          emptyBox.classList.add("hidden");
+          filteredCards.innerHTML = savedProductions.map(buildPosterCardHtml).join("");
+        }
+        return;
+      }
+
+      // 3. Default Carousel Browse View ("All Releases", "Feature Films", or "Original Series")
+      if (state.catalog.length > 0) {
+        heroBanner.classList.remove("hidden");
+      }
+      carouselsSection.classList.remove("hidden");
+      filteredSection.classList.add("hidden");
+
+      const pool =
+        state.activeTab === "All Releases"
+          ? state.catalog
+          : state.activeTab === "Feature Films"
+          ? state.catalog.filter((item) => item.type === "Movie")
+          : state.catalog.filter((item) => item.type === "Series");
+
+      const rows = [];
+
+      // My Watchlist Row (if user has saved items matching current tab)
+      const watchlistMatches = state.watchlist
+        .map((id) => pool.find((item) => item.id === id))
+        .filter(Boolean);
+      if (watchlistMatches.length > 0) {
+        rows.push({ id: "carousel-watchlist", title: "My Watchlist", items: watchlistMatches });
+      }
+
+      // Dynamic Category Rows (supports standard categories + any custom categories)
+      const standardCategories = ["Trending Now", "Originals", "Sci-Fi", "Documentaries"];
+      const dynamicCategories = [...new Set([...standardCategories, ...pool.map((i) => i.category)])];
+
+      dynamicCategories.forEach((catName, idx) => {
+        const matches = pool.filter((item) => item.category === catName);
+        if (matches.length > 0) {
+          rows.push({ id: `carousel-cat-${idx}`, title: catName, items: matches });
+        }
+      });
+
+      if (rows.length === 0 && pool.length > 0) {
+        rows.push({ id: "carousel-fallback", title: state.activeTab, items: pool });
+      }
+
+      carouselsSection.innerHTML = rows
+        .map(
+          (row) => `
+          <div class="space-y-3.5">
+            <div class="flex items-center justify-between">
+              <h2 class="font-serif text-lg sm:text-2xl font-bold text-white tracking-wide flex items-center gap-2.5">
+                <span>${escapeHtml(row.title)}</span>
+                <span class="h-1.5 w-1.5 rounded-full bg-[#F4B41A]"></span>
+              </h2>
+              <div class="hidden sm:flex items-center gap-2">
+                <button
+                  type="button"
+                  onclick="scrollCarouselRow('${row.id}', 'left')"
+                  class="p-2 rounded-xl bg-[#020724] hover:bg-[#07134D] border border-[#4B649B]/45 text-slate-200 hover:text-[#F4B41A] transition"
+                  aria-label="Scroll Left"
+                >
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
+                </button>
+                <button
+                  type="button"
+                  onclick="scrollCarouselRow('${row.id}', 'right')"
+                  class="p-2 rounded-xl bg-[#020724] hover:bg-[#07134D] border border-[#4B649B]/45 text-slate-200 hover:text-[#F4B41A] transition"
+                  aria-label="Scroll Right"
+                >
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+                </button>
+              </div>
+            </div>
+
+            <div id="${row.id}" class="flex gap-5 overflow-x-auto no-scrollbar scroll-smooth py-2 -mx-4 px-4 sm:mx-0 sm:px-0">
+              ${row.items
+                .map(
+                  (item) => `
+                  <div class="w-[265px] sm:w-[310px] lg:w-[340px] shrink-0">
+                    ${buildPosterCardHtml(item)}
+                  </div>
+                `
+                )
+                .join("")}
+            </div>
+          </div>
+        `
+        )
+        .join("");
+    }
+
+    // =====================================================================
+    // HYBRID VIDEO PLAYER (HTML5 MP4/HLS + YOUTUBE/VIMEO) & DETAILS MODALS
+    // =====================================================================
+    window.openVideoPlayer = function (id) {
+      closeDetailsModal();
+      const item = state.catalog.find((p) => p.id === id);
+      if (!item) return;
+
+      state.activeModalProduction = item;
+      const modal = document.getElementById("video-player-modal");
+      const videoEl = document.getElementById("noble-html5-video");
+      const iframeEl = document.getElementById("noble-embed-iframe");
+
+      document.getElementById("modal-player-title").textContent = item.title;
+      document.getElementById("modal-player-match").textContent = item.match;
+      document.getElementById("modal-player-year").textContent = item.year;
+      document.getElementById("modal-player-rating").textContent = item.rating;
+      document.getElementById("modal-player-genres").textContent = `${item.category} • ${item.type}`;
+      document.getElementById("modal-player-synopsis").textContent = item.description;
+
+      document.getElementById("modal-player-watchlist-btn").onclick = (e) => toggleWatchlist(item.id, e);
+      syncModalWatchlistButtons(item.id);
+
+      const parsed = parseStreamSource(item.videoUrl);
+
+      if (parsed.mode === "iframe") {
+        videoEl.pause();
+        videoEl.removeAttribute("src");
+        videoEl.classList.add("hidden");
+
+        iframeEl.src = parsed.src;
+        iframeEl.classList.remove("hidden");
+      } else {
+        iframeEl.src = "";
+        iframeEl.classList.add("hidden");
+
+        videoEl.classList.remove("hidden");
+        videoEl.src = parsed.src;
+        videoEl.play().catch(() => {});
+      }
+
+      modal.classList.remove("hidden");
+      document.body.style.overflow = "hidden";
+    };
+
+    window.closeVideoPlayer = function () {
+      const modal = document.getElementById("video-player-modal");
+      const videoEl = document.getElementById("noble-html5-video");
+      const iframeEl = document.getElementById("noble-embed-iframe");
+
+      videoEl.pause();
+      videoEl.removeAttribute("src");
+      videoEl.load();
+
+      iframeEl.src = "";
+      iframeEl.classList.add("hidden");
+
+      modal.classList.add("hidden");
+      document.body.style.overflow = "";
+      state.activeModalProduction = null;
+    };
+
+    window.openDetailsModal = function (id, event) {
+      if (event) event.stopPropagation();
+      const item = state.catalog.find((p) => p.id === id);
+      if (!item) return;
+
+      state.activeModalProduction = item;
+      const modal = document.getElementById("details-modal");
+
+      document.getElementById("details-vector-header").innerHTML = `
+        ${buildVisualMedia(item, true)}
+        <div class="absolute inset-0 bg-gradient-to-t from-[#020724] via-[#020724]/35 to-transparent"></div>
+      `;
+      document.getElementById("details-match").textContent = item.match;
+      document.getElementById("details-year").textContent = item.year;
+      document.getElementById("details-rating").textContent = item.rating;
+      document.getElementById("details-duration").textContent = item.duration;
+      document.getElementById("details-title").textContent = item.title;
+      document.getElementById("details-synopsis").textContent = item.description;
+      document.getElementById("details-director").textContent = item.director || "Noble Production Studios";
+      document.getElementById("details-genres").textContent = `${item.category}, ${item.type}`;
+
+      document.getElementById("details-play-btn").onclick = () => openVideoPlayer(item.id);
+      document.getElementById("details-watchlist-btn").onclick = (e) => toggleWatchlist(item.id, e);
+      syncModalWatchlistButtons(item.id);
+
+      modal.classList.remove("hidden");
+      document.body.style.overflow = "hidden";
+    };
+
+    window.closeDetailsModal = function () {
+      document.getElementById("details-modal").classList.add("hidden");
+      if (document.getElementById("video-player-modal").classList.contains("hidden")) {
+        document.body.style.overflow = "";
+      }
+    };
+
+    function syncModalWatchlistButtons(id) {
+      const saved = state.watchlist.includes(id);
+      const playerBtn = document.getElementById("modal-player-watchlist-btn");
+      const detailsBtn = document.getElementById("details-watchlist-btn");
+      if (playerBtn) playerBtn.textContent = saved ? "✓ Saved in My List" : "+ Add to My List";
+      if (detailsBtn) detailsBtn.textContent = saved ? "✓ In My List" : "+ My List";
+    }
+
+    // Close open modals on Escape key
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape") {
+        closeVideoPlayer();
+        closeDetailsModal();
+        closeAdminModal();
+      }
+    });
+
+    // =====================================================================
+    // PWA SERVICE WORKER & BEFOREINSTALLPROMPT HANDLER
+    // =====================================================================
+    const headerInstallBtn = document.getElementById("header-install-btn");
+    const loginInstallBtn = document.getElementById("login-install-btn");
+
+    window.addEventListener("beforeinstallprompt", (e) => {
+      e.preventDefault();
+      state.deferredInstallEvent = e;
+      headerInstallBtn.classList.remove("hidden");
+      headerInstallBtn.classList.add("flex");
+      loginInstallBtn.classList.remove("hidden");
+      loginInstallBtn.classList.add("flex");
+    });
+
+    async function promptPwaInstall() {
+      if (!state.deferredInstallEvent) return;
+      state.deferredInstallEvent.prompt();
+      const { outcome } = await state.deferredInstallEvent.userChoice;
+      if (outcome === "accepted") {
+        headerInstallBtn.classList.add("hidden");
+        loginInstallBtn.classList.add("hidden");
+        showToast("Noble Production Studios installed as an app!", "success");
+      }
+      state.deferredInstallEvent = null;
+    }
+
+    headerInstallBtn.addEventListener("click", promptPwaInstall);
+    loginInstallBtn.addEventListener("click", promptPwaInstall);
+
+    // Register Inline Blob Service Worker for Offline Caching & Standalone PWA Criteria
+    if ("serviceWorker" in navigator) {
+      window.addEventListener("load", () => {
+        const swScript = `
+          const CACHE_NAME = 'noble-production-studios-pwa-v1';
+          self.addEventListener('install', (event) => {
+            self.skipWaiting();
+          });
+          self.addEventListener('activate', (event) => {
+            event.waitUntil(self.clients.claim());
+          });
+          self.addEventListener('fetch', (event) => {
+            if (event.request.method !== 'GET') return;
+            event.respondWith(
+              fetch(event.request)
+                .then((networkResponse) => {
+                  const copy = networkResponse.clone();
+                  caches.open(CACHE_NAME).then((cache) => cache.put(event.request, copy)).catch(() => {});
+                  return networkResponse;
+                })
+                .catch(() => caches.match(event.request))
+            );
+          });
+        `;
+        const swBlob = new Blob([swScript], { type: "application/javascript" });
+        const swUrl = URL.createObjectURL(swBlob);
+        navigator.serviceWorker.register(swUrl).catch(() => {});
+      });
+    }
+  </script>
+</body>
+</html>
